@@ -1,0 +1,857 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Firebrand by 47deg</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+
+      <header>
+        <h1>Firebrand</h1>
+        <p>An Object 2 Cassandra Mapper</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/47deg/firebrand" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/47deg/firebrand/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/47deg/firebrand/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <h1>Firebrand OCM</h1>
+
+<p>Firebrand OCM is a simple library for persisting and querying <a href="http://en.wikipedia.org/wiki/Java_(programming_language">Java</a>)
+Objects to a Cassandra Database. Firebrand's goal is to provide an elegant and simple interface to bring the power and scalability
+of <a href="http://cassandra.apache.org/">Apache Cassandra</a> to your application.</p>
+
+<h1>Download</h1>
+
+<h2>Maven Dependency</h2>
+
+<p>Firebrand may be automatically imported into your project if you already use <a href="http://maven.apache.org/">Maven</a>.
+Just declare Firebrand as a maven dependency. If you wish to always use the latest unstable snapshots, add the Sonatype
+repository where the Firebrand snapshot artifacts are being deployed. Firebrand official releases will be made available at Maven Central.</p>
+
+<div class="highlight"><pre><span class="nt">&lt;repository&gt;</span>
+    <span class="nt">&lt;id&gt;</span>sonatype<span class="nt">&lt;/id&gt;</span>
+    <span class="nt">&lt;url&gt;</span>https://oss.sonatype.org/content/groups/public/<span class="nt">&lt;/url&gt;</span>
+    <span class="nt">&lt;releases&gt;</span>
+        <span class="nt">&lt;enabled&gt;</span>true<span class="nt">&lt;/enabled&gt;</span>
+        <span class="nt">&lt;updatePolicy&gt;</span>daily<span class="nt">&lt;/updatePolicy&gt;</span>
+        <span class="nt">&lt;checksumPolicy&gt;</span>fail<span class="nt">&lt;/checksumPolicy&gt;</span>
+    <span class="nt">&lt;/releases&gt;</span>
+    <span class="nt">&lt;snapshots&gt;</span>
+        <span class="nt">&lt;enabled&gt;</span>true<span class="nt">&lt;/enabled&gt;</span>
+        <span class="nt">&lt;updatePolicy&gt;</span>always<span class="nt">&lt;/updatePolicy&gt;</span>
+        <span class="nt">&lt;checksumPolicy&gt;</span>ignore<span class="nt">&lt;/checksumPolicy&gt;</span>
+    <span class="nt">&lt;/snapshots&gt;</span>
+<span class="nt">&lt;/repository&gt;</span>
+
+<span class="nt">&lt;dependency&gt;</span>
+    <span class="nt">&lt;groupId&gt;</span>org.firebrand<span class="nt">&lt;/groupId&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>firebrand<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+</pre></div>
+
+<h2>JAR and others</h2>
+
+<p>You can get the releases, snapshots and other forms in which Firebrand is distributed from the <a href="https://github.com/47deg/firebrand/downloads">Downloads</a> page.</p>
+
+<h1>Usage</h1>
+
+<h2>Persistence Factory</h2>
+
+<p>Access to the persistence operations and all entity related operations are performed via the <a href="https://github.com/47deg/firebrand/blob/master/src/main/java/org/firebrand/dao/PersistenceFactory.java">PersistenceFactory</a>.
+The persistence factory includes methods to perform the most common operations for creating, persisting,
+removing and querying the entities persisted in the underlying Cassandra database.</p>
+
+<h3>Configuration</h3>
+
+<p>Firebrand ships with an implementation of the <a href="https://github.com/47deg/firebrand/blob/master/src/main/java/org/firebrand/dao/PersistenceFactory.java">PersistenceFactory</a> based on the popular Cassandra client <a href="http://hector-client.org">Hector</a>.
+You can configure an instance of the <a href="https://github.com/47deg/firebrand/blob/master/src/main/java/org/firebrand/dao/impl/HectorPersistenceFactory.java">HectorPersistenceFactory</a> programmatically or with an IOC container such as <a href="http://www.springsource.org/">Spring</a>.
+The Persistence Factory is ment to be cached and reused throught the application lifecycle.</p>
+
+<h4>Spring</h4>
+
+<div class="highlight"><pre><span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">"org.firebrand.dao.impl.hector.HectorPersistenceFactory"</span> <span class="na">init-method=</span><span class="s">"init"</span> <span class="na">destroy-method=</span><span class="s">"destroy"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"defaultConsistencyLevel"</span> <span class="na">value=</span><span class="s">"ANY"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"clusterName"</span> <span class="na">value=</span><span class="s">"${cassandra.cluster}"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"defaultKeySpace"</span> <span class="na">value=</span><span class="s">"${cassandra.keyspace}"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"contactNodes"</span> <span class="na">value=</span><span class="s">"${cassandra.rpc.addresses}"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"thriftPort"</span> <span class="na">value=</span><span class="s">"${cassandra.thrift.port}"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"autoDiscoverHosts"</span> <span class="na">value=</span><span class="s">"${cassandra.autoDiscoverHosts}"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"entities"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;list&gt;</span>
+                <span class="nt">&lt;value&gt;</span>com.yourcompany.domain.Entity<span class="nt">&lt;/value&gt;</span>
+                ...
+            <span class="nt">&lt;/list&gt;</span>
+        <span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;/bean&gt;</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="nd">@Autowired</span>
+<span class="kd">private</span> <span class="n">PersistenceFactory</span> <span class="n">persistenceFactory</span>
+</pre></div>
+
+<h4>Programmatically</h4>
+
+<div class="highlight"><pre><span class="n">PersistenceFactory</span> <span class="n">persistenceFactory</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HectorPersistenceFactory</span><span class="o">.</span><span class="na">Builder</span><span class="o">()</span>
+                    <span class="o">.</span><span class="na">defaultConsistencyLevel</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span>
+                    <span class="o">.</span><span class="na">clusterName</span><span class="o">(</span><span class="n">cluster</span><span class="o">)</span>
+                    <span class="o">.</span><span class="na">defaultKeySpace</span><span class="o">(</span><span class="n">keySpace</span><span class="o">)</span>
+                    <span class="o">.</span><span class="na">contactNodes</span><span class="o">(</span><span class="n">nodes</span><span class="o">)</span>
+                    <span class="o">.</span><span class="na">thriftPort</span><span class="o">(</span><span class="n">port</span><span class="o">)</span>
+                    <span class="o">.</span><span class="na">autoDiscoverHosts</span><span class="o">(</span><span class="n">autoDiscoverHosts</span><span class="o">)</span>
+                    <span class="o">.</span><span class="na">entities</span><span class="o">(</span><span class="n">entities</span><span class="o">)</span>
+                    <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+</pre></div>
+
+<h3>Get</h3>
+
+<p>Load any entity from the data store by key.</p>
+
+<div class="highlight"><pre><span class="n">Entity</span> <span class="n">entity</span> <span class="o">=</span> <span class="n">peristenceFactory</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">Entity</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">key</span><span class="o">);</span>
+</pre></div>
+
+<h3>Persist</h3>
+
+<p>Persist one or multiple entities.</p>
+
+<div class="highlight"><pre><span class="n">Entity</span> <span class="n">entity</span> <span class="o">=</span> <span class="o">...;</span>
+<span class="n">entity</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+<span class="n">persistenceFactory</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">entity</span><span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="n">Entity</span> <span class="n">one</span> <span class="o">=</span> <span class="o">...;</span>
+<span class="n">Entity</span> <span class="n">two</span> <span class="o">=</span> <span class="o">...;</span>
+<span class="n">Entity</span> <span class="n">three</span> <span class="o">=</span> <span class="o">...;</span>
+<span class="n">persistenceFactory</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">one</span><span class="o">,</span> <span class="n">two</span><span class="o">,</span> <span class="n">three</span><span class="o">,</span> <span class="o">...);</span>
+</pre></div>
+
+<h3>Remove</h3>
+
+<p>Remove one or multiple entities.</p>
+
+<div class="highlight"><pre><span class="n">Entity</span> <span class="n">entity</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">persistenceFactory</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">entity</span><span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="n">Entity</span> <span class="n">one</span> <span class="o">=</span> <span class="o">...;</span>
+<span class="n">Entity</span> <span class="n">two</span> <span class="o">=</span> <span class="o">...;</span>
+<span class="n">Entity</span> <span class="n">three</span> <span class="o">=</span> <span class="o">...;</span>
+<span class="n">persistenceFactory</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">one</span><span class="o">,</span> <span class="n">two</span><span class="o">,</span> <span class="n">three</span><span class="o">,</span> <span class="o">...);</span>
+</pre></div>
+
+<h3>Query</h3>
+
+<p>Firebrand supports <a href="http://cassandra.apache.org/doc/cql/CQL.html">CQL</a> to fetch managed entities.
+The Persistence Factory understands both <a href="#named-queries"><strong>Named Queries</strong></a> and <a href="https://github.com/47deg/firebrand/blob/master/src/main/java/org/firebrand/dao/Query.java">Query</a> statements generated by the <a href="#query-builder">QueryBuilder</a>.</p>
+
+<h4>Query Builder</h4>
+
+<p>A <a href="#query-builder">Query Builder</a> is included with support for most of the statements and clauses supported by CQL that may be used
+to construct a Query. The Query Builder acts as a static builder that may be imported statically for quick and easy syntactic access to all its methods.</p>
+
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">static</span> <span class="n">org</span><span class="o">.</span><span class="na">firebrand</span><span class="o">.</span><span class="na">dao</span><span class="o">.</span><span class="na">cql</span><span class="o">.</span><span class="na">QueryBuilder</span><span class="o">.*;</span>
+<span class="o">...</span>
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="na">getResultList</span><span class="o">(</span><span class="n">Account</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">Query</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">select</span><span class="o">(</span><span class="n">allColumns</span><span class="o">(),</span> <span class="n">from</span><span class="o">(</span><span class="n">Account</span><span class="o">.</span><span class="na">class</span><span class="o">))));</span>
+</pre></div>
+
+<h4>Named Queries</h4>
+
+<p>Named queries are loaded when the PersistenceFactory is initialized and can be referenced by name.
+Named queries are declared using <a href="#@namedquery">@NamedQuery</a> and support named parameters in the format of <em>:parameter</em>.</p>
+
+<div class="highlight"><pre><span class="nd">@ColumnFamily</span>
+<span class="nd">@NamedQueries</span><span class="o">({</span>
+        <span class="nd">@NamedQuery</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="n">Account</span><span class="o">.</span><span class="na">QUERY_ALL_ACCOUNTS_WITH_NAME</span><span class="o">,</span> <span class="n">query</span> <span class="o">=</span> <span class="s">"select * from Account where name = :name"</span><span class="o">)</span>
+<span class="o">})</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Account</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">QUERY_ALL_ACCOUNTS_WITH_NAME</span> <span class="o">=</span> <span class="s">"Account.QUERY_ALL_ACCOUNTS_WITH_NAME"</span><span class="o">;</span>
+
+    <span class="nd">@Key</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">key</span><span class="o">;</span>
+
+    <span class="nd">@Column</span><span class="o">(</span><span class="n">indexed</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+
+    <span class="o">...</span> <span class="n">getters</span> <span class="o">&amp;</span> <span class="n">setters</span>
+
+<span class="o">}</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="na">getResultList</span><span class="o">(</span><span class="n">Account</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">Query</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">Account</span><span class="o">.</span><span class="na">QUERY_ALL_ACCOUNTS_WITH_NAME</span><span class="o">,</span> <span class="k">new</span> <span class="n">HashMap</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;(){{</span>
+    <span class="n">put</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span> <span class="n">name</span><span class="o">);</span>
+<span class="o">}}));</span>
+</pre></div>
+
+<h3>Enhanced instances</h3>
+
+<p>Firebrand can increase performance and give you better control on how data is loaded at runtime if it knows when you are
+going to perform certain operations. For example, Firebrand can lazy load properties only when you invoke their getter instead of preloading
+all persistent properties and hidrating your model eagerly. In order to perform this operation Firebrand uses <a href="http://www.javassist.org">Javassist</a>
+based proxies of your entities that provide advice around invokation of certain methods.
+In the rare event that you need to manually obtain proxies up front you can directly invoke <a href="">org.firebrand.dao.PersistenceFactory#getInstance(Class)</a></p>
+
+<h2>Annotations</h2>
+
+<p>Firebrand is an annotation based framework. Most annotations are declared directly in the classes that represent persistent entities.</p>
+
+<h3>@ColumnFamily</h3>
+
+<p>The Class <em>@ColumnFamily</em> annotation declares a class as persistent. Each instance of this class will have its <a href="#@column">columns</a> persisted under the
+same row.</p>
+
+<div class="highlight"><pre><span class="nd">@ColumnFamily</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Account</span> <span class="o">{</span>
+    <span class="o">...</span>
+<span class="o">}</span>
+</pre></div>
+
+<h3><a href="https://github.com/key" class="user-mention">@key</a></h3>
+
+<h3><a href="https://github.com/column" class="user-mention">@column</a></h3>
+
+<p>The field <em><a href="https://github.com/column" class="user-mention">@column</a></em> annotation declares a field as a column. All fields are implicit considered as columns even when they
+are not annotated as such. To selectively ignore fields see <a href="#@transient">Transient</a>.</p>
+
+<div class="highlight"><pre><span class="nd">@ColumnFamily</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Account</span> <span class="o">{</span>
+
+    <span class="nd">@Key</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">key</span><span class="o">;</span>
+
+    <span class="nd">@Column</span><span class="o">(</span><span class="n">indexed</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+
+    <span class="o">...</span>
+
+<span class="o">}</span>
+</pre></div>
+
+<p>Columns may be configured to affect they way the interact with the PersistenceFactory and the underlying Cassandra database.
+Some of the most common configuration properties for columns are as follows:</p>
+
+<ul>
+<li>indexed - columns used in queries with eq, lt, ... must be indexed</li>
+<li>lazy - wether this column's value will be loaded eagerly or lazily loaded when it's accesor is invoked.</li>
+<li>validationClass - the validator used by cassandra when manipulating data</li>
+<li>counter - if this column represents a counter type column</li>
+<li>indexType - the type of index for the column</li>
+</ul><h3>@CounterIncrease</h3>
+
+<p>Fields annotated with <em>@CounterIncrease</em> are evaluated to have a column with counter type column
+increased or decreased on a persistence operation.</p>
+
+<div class="highlight"><pre><span class="nd">@ColumnFamily</span><span class="o">(</span><span class="n">defaultValidationClass</span> <span class="o">=</span> <span class="n">CounterColumnType</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CounterEntity</span> <span class="o">{</span>
+
+    <span class="nd">@Key</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">key</span><span class="o">;</span>
+
+    <span class="nd">@Column</span><span class="o">(</span><span class="n">counter</span> <span class="o">=</span> <span class="kc">true</span><span class="o">,</span> <span class="n">validationClass</span> <span class="o">=</span> <span class="n">CounterColumnType</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="kt">long</span> <span class="n">counterProperty</span><span class="o">;</span>
+
+    <span class="nd">@CounterIncrease</span><span class="o">(</span><span class="s">"counterProperty"</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="kt">long</span> <span class="n">counterPropertyIncreaseBy</span><span class="o">;</span>
+
+    <span class="o">...</span>
+<span class="o">}</span>
+</pre></div>
+
+<h3><a href="https://github.com/Embedded" class="user-mention">@Embedded</a></h3>
+
+<p>Firebrand supports embedded classes.
+Embedded entities are classes that do not represent a @ColumnFamily on its own and get flatten into the column family
+where they are declared.
+Inner properties are persisted following a dot notation key as columns keys. e.g. credentials.password
+Multiple levels of embedded properties are supported.</p>
+
+<div class="highlight"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Credentials</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">password</span><span class="o">;</span>
+
+    <span class="o">...</span>
+
+<span class="o">}</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="nd">@ColumnFamily</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Account</span> <span class="o">{</span>
+
+    <span class="nd">@Key</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">key</span><span class="o">;</span>
+
+    <span class="nd">@Embedded</span>
+    <span class="kd">private</span> <span class="n">Credentials</span> <span class="n">credentials</span><span class="o">;</span>
+
+    <span class="o">...</span>
+
+<span class="o">}</span>
+</pre></div>
+
+<h3>@Mapped</h3>
+
+<p>Mapped properties represent a *to-one relationship.</p>
+
+<div class="highlight"><pre><span class="nd">@ColumnFamily</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Account</span> <span class="o">{</span>
+
+    <span class="nd">@Key</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">key</span><span class="o">;</span>
+
+    <span class="o">...</span>
+
+<span class="o">}</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="nd">@ColumnFamily</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Profile</span> <span class="o">{</span>
+
+    <span class="nd">@Key</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">key</span><span class="o">;</span>
+
+    <span class="nd">@Mapped</span>
+    <span class="kd">private</span> <span class="n">Account</span> <span class="n">account</span><span class="o">;</span>
+
+    <span class="o">...</span>
+
+<span class="o">}</span>
+</pre></div>
+
+<h3>@MappedCollection</h3>
+
+<p>Mapped collections represent a reference *to-many relationship.</p>
+
+<div class="highlight"><pre><span class="nd">@ColumnFamily</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Account</span> <span class="o">{</span>
+
+    <span class="nd">@Key</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">key</span><span class="o">;</span>
+
+    <span class="o">...</span>
+
+<span class="o">}</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="nd">@ColumnFamily</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Department</span> <span class="o">{</span>
+
+    <span class="nd">@Key</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">key</span><span class="o">;</span>
+
+    <span class="nd">@MappedCollection</span>
+    <span class="kd">private</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Account</span><span class="o">&gt;</span> <span class="n">accounts</span><span class="o">;</span>
+
+    <span class="o">...</span>
+
+<span class="o">}</span>
+</pre></div>
+
+<h3>@OnEvent</h3>
+
+<p>The special annotation <a href="https://github.com/47deg/firebrand/blob/master/src/main/java/org/firebrand/dao/annotations/OnEvent.java">OnEvent</a> declares an entity method as event listener for the <a href="#entity-events">Entity</a> and <a href="#column-events">Column</a> Events broadcasted
+by the PersistenceFactory.</p>
+
+<div class="highlight"><pre><span class="nd">@ColumnFamily</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Account</span> <span class="o">{</span>
+
+    <span class="nd">@Key</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">key</span><span class="o">;</span>
+
+    <span class="nd">@OnEvent</span><span class="o">(</span><span class="n">Event</span><span class="o">.</span><span class="na">Entity</span><span class="o">.</span><span class="na">PRE_PERSIST</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onPrePersist</span><span class="o">()</span> <span class="o">{</span>
+        <span class="c1">//do something interesting here</span>
+    <span class="o">}</span>
+
+    <span class="o">...</span>
+
+<span class="o">}</span>
+</pre></div>
+
+<h3><a href="https://github.com/transient" class="user-mention">@transient</a></h3>
+
+<p>Fields declared as <em><a href="https://github.com/transient" class="user-mention">@transient</a></em> will be ignored for any persistence purposes.</p>
+
+<div class="highlight"><pre><span class="nd">@ColumnFamily</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Account</span> <span class="o">{</span>
+
+    <span class="nd">@Key</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">key</span><span class="o">;</span>
+
+    <span class="nd">@Transient</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">hairColor</span><span class="o">;</span>
+
+    <span class="o">...</span>
+
+<span class="o">}</span>
+</pre></div>
+
+<h2>Events</h2>
+
+<p>The Persisence Factory is responsible for broadcasting events when certain operations are performed on entities and columns.
+See <a href="#onevent">@OnEvent</a> for more information on how to subscribe to a given event.
+The following is a list for both Entity and Column events.</p>
+
+<h3>Entity Events</h3>
+
+<ul>
+<li>PRE_DELETE</li>
+<li>POST_DELETE</li>
+<li>PRE_LOAD</li>
+<li>POST_LOAD</li>
+<li>PRE_PERSIST</li>
+<li>POST_PERSIST</li>
+<li>POST_COMMIT</li>
+</ul><h3>Column Events</h3>
+
+<ul>
+<li>PRE_COLUMN_MUTATION</li>
+<li>PRE_COUNTER_MUTATION</li>
+<li>POST_COLUMN_MUTATION</li>
+<li>POST_COUNTER_MUTATION</li>
+<li>PRE_COLUMN_DELETION</li>
+<li>POST_COLUMN_DELETION</li>
+</ul><h2>Type Converters</h2>
+
+<p>Type converters are in charge of converting from Java objects to ByteBuffer and back.
+Firebrand ships with type converters for the most common data types.
+All type converters implement <a href="https://github.com/47deg/firebrand/blob/master/src/main/java/org/firebrand/dao/TypeConverter.java">org.firebrand.dao.TypeConverter</a>.
+You may contibute new type converters or override the existing ones to the converters map at
+org.firebrand.dao.AbstractPersistenceFactory#getTypeConverters</p>
+
+<h2>CQL</h2>
+
+<p>Firebrand queries are <a href="http://cassandra.apache.org/doc/cql/CQL.html">CQL</a> queries.
+Firebrand supports both pre typed <a href="#named-queries">Named Queries</a> and a dynamic <a href="#query-builder">Query Builder</a> that makes building CQL queries programmatically
+a breeze.</p>
+
+<h3>Query Builder</h3>
+
+<p>Import the query builder static methods to avoid verbose statements.</p>
+
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">static</span> <span class="n">org</span><span class="o">.</span><span class="na">firebrand</span><span class="o">.</span><span class="na">dao</span><span class="o">.</span><span class="na">cql</span><span class="o">.</span><span class="na">QueryBuilder</span><span class="o">.*;</span>
+</pre></div>
+
+<p>Chain statements as needed.</p>
+
+<div class="highlight"><pre><span class="n">select</span><span class="o">(</span>
+    <span class="n">allColumns</span><span class="o">(),</span>
+    <span class="n">from</span><span class="o">(</span><span class="s">"Account"</span><span class="o">),</span>
+    <span class="n">where</span><span class="o">(</span>
+        <span class="n">eq</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span> <span class="s">"test"</span><span class="o">),</span>
+        <span class="n">eq</span><span class="o">(</span><span class="s">"username"</span><span class="o">,</span> <span class="s">"test2"</span><span class="o">)</span>
+    <span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">Account</span> <span class="k">WHERE</span> <span class="s1">'name'</span> <span class="o">=</span> <span class="s1">'test'</span> <span class="k">AND</span> <span class="s1">'username'</span> <span class="o">=</span> <span class="s1">'test2'</span><span class="p">;</span>
+</pre></div>
+
+<h3>SELECT</h3>
+
+<div class="highlight"><pre><span class="n">select</span><span class="o">(</span>
+    <span class="n">allColumns</span><span class="o">(),</span>
+    <span class="n">from</span><span class="o">(</span><span class="s">"Account"</span><span class="o">),</span>
+    <span class="n">where</span><span class="o">(</span>
+        <span class="n">eq</span><span class="o">(</span><span class="s">"name"</span><span class="o">,</span> <span class="s">"test"</span><span class="o">),</span>
+        <span class="n">eq</span><span class="o">(</span><span class="s">"username"</span><span class="o">,</span> <span class="s">"test2"</span><span class="o">)</span>
+    <span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">Account</span> <span class="k">WHERE</span> <span class="s1">'name'</span> <span class="o">=</span> <span class="s1">'test'</span> <span class="k">AND</span> <span class="s1">'username'</span> <span class="o">=</span> <span class="s1">'test2'</span><span class="p">;</span>
+</pre></div>
+
+<p><a href="http://cassandra.apache.org/doc/cql/CQL.html#SELECT">http://cassandra.apache.org/doc/cql/CQL.html#SELECT</a></p>
+
+<h4>Specifying Columns</h4>
+
+<p><em>All columns</em></p>
+
+<div class="highlight"><pre><span class="n">select</span><span class="o">(</span>
+    <span class="n">allColumns</span><span class="o">(),</span>
+    <span class="n">from</span><span class="o">(</span><span class="s">"Account"</span><span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">Account</span><span class="p">;</span>
+</pre></div>
+
+<p><em>First N</em></p>
+
+<div class="highlight"><pre><span class="n">select</span><span class="o">(</span>
+    <span class="n">first</span><span class="o">(</span><span class="mi">5</span><span class="o">),</span>
+    <span class="n">reversed</span><span class="o">(),</span>
+    <span class="n">from</span><span class="o">(</span><span class="s">"Account"</span><span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">SELECT</span> <span class="k">FIRST</span> <span class="mi">5</span> <span class="n">REVERSED</span> <span class="k">FROM</span> <span class="n">Account</span><span class="p">;</span>
+</pre></div>
+
+<p><em>Range</em></p>
+
+<div class="highlight"><pre><span class="n">select</span><span class="o">(</span>
+    <span class="n">columnRange</span><span class="o">(</span><span class="s">"a"</span><span class="o">,</span> <span class="s">"z"</span><span class="o">),</span>
+    <span class="n">from</span><span class="o">(</span><span class="s">"Account"</span><span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">SELECT</span> <span class="s1">'a'</span><span class="p">..</span><span class="s1">'z'</span> <span class="k">FROM</span> <span class="n">Account</span><span class="p">;</span>
+</pre></div>
+
+<p><em>List</em></p>
+
+<div class="highlight"><pre><span class="n">select</span><span class="o">(</span>
+    <span class="n">columns</span><span class="o">(</span><span class="s">"a"</span><span class="o">,</span><span class="s">"b"</span><span class="o">,</span><span class="s">"c"</span><span class="o">),</span>
+    <span class="n">from</span><span class="o">(</span><span class="s">"Account"</span><span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">SELECT</span> <span class="s1">'a'</span><span class="p">,</span><span class="s1">'b'</span><span class="p">,</span><span class="s1">'c'</span> <span class="k">FROM</span> <span class="n">Account</span><span class="p">;</span>
+</pre></div>
+
+<p><a href="http://cassandra.apache.org/doc/cql/CQL.html#SpecifyingColumns">http://cassandra.apache.org/doc/cql/CQL.html#SpecifyingColumns</a></p>
+
+<h4>Column Family</h4>
+
+<div class="highlight"><pre><span class="n">select</span><span class="o">(</span>
+    <span class="n">allColumns</span><span class="o">(),</span>
+    <span class="n">from</span><span class="o">(</span><span class="s">"Account"</span><span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">Account</span><span class="p">;</span>
+</pre></div>
+
+<p><a href="http://cassandra.apache.org/doc/cql/CQL.html#ColumnFamily">http://cassandra.apache.org/doc/cql/CQL.html#ColumnFamily</a></p>
+
+<h4>Consistency Level</h4>
+
+<div class="highlight"><pre><span class="n">select</span><span class="o">(</span>
+    <span class="n">allColumns</span><span class="o">(),</span>
+    <span class="n">from</span><span class="o">(</span><span class="s">"Account"</span><span class="o">),</span>
+    <span class="n">consistency</span><span class="o">(</span><span class="n">ConsistencyType</span><span class="o">.</span><span class="na">ONE</span><span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">Account</span> <span class="k">USING</span> <span class="n">CONSISTENCY</span> <span class="n">ONE</span><span class="p">;</span>
+</pre></div>
+
+<p><a href="http://cassandra.apache.org/doc/cql/CQL.html#ConsistencyLevel">http://cassandra.apache.org/doc/cql/CQL.html#ConsistencyLevel</a></p>
+
+<h4>Filtering rows</h4>
+
+<p>The WHERE clause support filters for the rows that appear in results.
+The supported operator are =, &gt;, &gt;=, &lt;, &lt;=.</p>
+
+<div class="highlight"><pre><span class="n">select</span><span class="o">(</span>
+    <span class="n">allColumns</span><span class="o">(),</span>
+    <span class="n">from</span><span class="o">(</span><span class="s">"Account"</span><span class="o">),</span>
+    <span class="n">where</span><span class="o">(</span>
+        <span class="n">eq</span><span class="o">(</span><span class="s">"a"</span><span class="o">,</span> <span class="mi">4</span><span class="o">),</span>
+        <span class="n">lt</span><span class="o">(</span><span class="s">"b"</span><span class="o">,</span> <span class="s">"test"</span><span class="o">),</span>
+        <span class="n">lte</span><span class="o">(</span><span class="s">"c"</span><span class="o">,</span> <span class="mi">0</span><span class="o">),</span>
+        <span class="n">gt</span><span class="o">(</span><span class="s">"d"</span><span class="o">,</span> <span class="o">-</span><span class="mi">234</span><span class="o">),</span>
+        <span class="n">gte</span><span class="o">(</span><span class="s">"e"</span><span class="o">,</span> <span class="o">-</span><span class="mi">92334</span><span class="o">),</span>
+        <span class="n">between</span><span class="o">(</span><span class="s">"f"</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">10</span><span class="o">),</span>
+        <span class="n">keyIn</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span>
+    <span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">Account</span>
+    <span class="k">WHERE</span> <span class="s1">'a'</span> <span class="o">=</span> <span class="s1">'4'</span> <span class="k">AND</span> <span class="s1">'b'</span> <span class="o">&lt;</span> <span class="s1">'test'</span> <span class="k">AND</span> <span class="s1">'c'</span> <span class="o">&lt;=</span> <span class="s1">'0'</span> <span class="k">AND</span> <span class="s1">'d'</span> <span class="o">&gt;</span> <span class="s1">'-234'</span> <span class="k">AND</span> <span class="s1">'e'</span> <span class="o">&gt;=</span> <span class="s1">'-92334'</span>
+        <span class="k">AND</span> <span class="s1">'f'</span> <span class="o">&gt;=</span> <span class="s1">'1'</span> <span class="k">AND</span> <span class="s1">'f'</span> <span class="o">&lt;=</span> <span class="s1">'10'</span> <span class="k">AND</span> <span class="k">KEY</span> <span class="k">in</span> <span class="p">(</span><span class="s1">'0'</span><span class="p">,</span> <span class="s1">'1'</span><span class="p">,</span> <span class="s1">'2'</span><span class="p">,</span> <span class="s1">'3'</span><span class="p">);</span><span class="err">"</span><span class="p">,</span>
+</pre></div>
+
+<p><a href="http://cassandra.apache.org/doc/cql/CQL.html#Filteringrows">http://cassandra.apache.org/doc/cql/CQL.html#Filteringrows</a></p>
+
+<h4>Limits</h4>
+
+<p>The number of rows returned in a result may be limited with the LIMIT kewyord. If not specified the implicit limit is 10000.</p>
+
+<div class="highlight"><pre><span class="n">select</span><span class="o">(</span>
+    <span class="n">allColumns</span><span class="o">(),</span>
+    <span class="n">from</span><span class="o">(</span><span class="s">"Account"</span><span class="o">),</span>
+    <span class="n">limit</span><span class="o">(</span><span class="mi">10</span><span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">Account</span> <span class="k">LIMIT</span> <span class="mi">10</span><span class="p">;</span>
+</pre></div>
+
+<p><a href="http://cassandra.apache.org/doc/cql/CQL.html#Limits">http://cassandra.apache.org/doc/cql/CQL.html#Limits</a></p>
+
+<h3>INSERT</h3>
+
+<div class="highlight"><pre><span class="n">insert</span><span class="o">(</span>
+    <span class="n">columnFamily</span><span class="o">(</span><span class="s">"Account"</span><span class="o">),</span>
+    <span class="n">into</span><span class="o">(</span><span class="s">"KEY"</span><span class="o">,</span> <span class="s">"a"</span><span class="o">,</span> <span class="s">"b"</span><span class="o">,</span> <span class="s">"c"</span><span class="o">),</span>
+    <span class="n">values</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">),</span>
+    <span class="n">writeOptions</span><span class="o">(</span>
+        <span class="n">consistency</span><span class="o">(</span><span class="n">ConsistencyType</span><span class="o">.</span><span class="na">ONE</span><span class="o">),</span>
+        <span class="n">ttl</span><span class="o">(</span><span class="mi">86400</span><span class="o">)</span>
+    <span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">Account</span> <span class="p">(</span><span class="k">KEY</span><span class="p">,</span> <span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">'1'</span><span class="p">,</span> <span class="s1">'0'</span><span class="p">,</span> <span class="s1">'1'</span><span class="p">,</span> <span class="s1">'2'</span><span class="p">)</span> <span class="k">USING</span> <span class="n">CONSISTENCY</span> <span class="n">ONE</span> <span class="k">AND</span> <span class="n">TTL</span> <span class="mi">86400</span><span class="p">;</span>
+</pre></div>
+
+<p><a href="http://cassandra.apache.org/doc/cql/CQL.html#INSERT">http://cassandra.apache.org/doc/cql/CQL.html#INSERT</a></p>
+
+<h3>UPDATE</h3>
+
+<div class="highlight"><pre><span class="n">update</span><span class="o">(</span>
+    <span class="n">columnFamily</span><span class="o">(</span><span class="s">"Account"</span><span class="o">),</span>
+    <span class="n">writeOptions</span><span class="o">(</span>
+        <span class="n">consistency</span><span class="o">(</span><span class="n">ConsistencyType</span><span class="o">.</span><span class="na">ONE</span><span class="o">),</span>
+        <span class="n">timestamp</span><span class="o">(</span><span class="mi">546745</span><span class="o">),</span>
+        <span class="n">ttl</span><span class="o">(</span><span class="mi">34352</span><span class="o">)</span>
+    <span class="o">),</span>
+    <span class="n">set</span><span class="o">(</span>
+        <span class="n">assign</span><span class="o">(</span><span class="s">"a"</span><span class="o">,</span> <span class="mi">4</span><span class="o">),</span>
+        <span class="n">assign</span><span class="o">(</span><span class="s">"b"</span><span class="o">,</span> <span class="s">"test"</span><span class="o">),</span>
+        <span class="n">assign</span><span class="o">(</span><span class="s">"c"</span><span class="o">,</span> <span class="mi">0</span><span class="o">)</span>
+    <span class="o">),</span>
+    <span class="n">where</span><span class="o">(</span>
+        <span class="n">key</span><span class="o">(</span><span class="mi">4</span><span class="o">)</span>
+    <span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">UPDATE</span> <span class="n">Account</span> <span class="k">USING</span> <span class="n">CONSISTENCY</span> <span class="n">ONE</span> <span class="k">AND</span> <span class="k">TIMESTAMP</span> <span class="mi">546745</span> <span class="k">AND</span> <span class="n">TTL</span> <span class="mi">34352</span> <span class="k">SET</span> <span class="s1">'a'</span> <span class="o">=</span> <span class="s1">'4'</span><span class="p">,</span> <span class="s1">'b'</span> <span class="o">=</span> <span class="s1">'test'</span><span class="p">,</span> <span class="s1">'c'</span> <span class="o">=</span> <span class="s1">'0'</span> <span class="k">WHERE</span> <span class="k">KEY</span> <span class="o">=</span> <span class="s1">'4'</span><span class="p">;</span>
+</pre></div>
+
+<p><a href="http://cassandra.apache.org/doc/cql/CQL.html#update">http://cassandra.apache.org/doc/cql/CQL.html#update</a></p>
+
+<h3>DELETE</h3>
+
+<div class="highlight"><pre><span class="n">delete</span><span class="o">(</span>
+    <span class="n">columns</span><span class="o">(</span><span class="s">"a"</span><span class="o">,</span> <span class="s">"b"</span><span class="o">,</span> <span class="s">"c"</span><span class="o">),</span>
+    <span class="n">from</span><span class="o">(</span><span class="s">"Account"</span><span class="o">),</span>
+    <span class="n">writeOptions</span><span class="o">(</span>
+        <span class="n">consistency</span><span class="o">(</span><span class="n">ConsistencyType</span><span class="o">.</span><span class="na">ONE</span><span class="o">),</span>
+        <span class="n">timestamp</span><span class="o">(</span><span class="mi">21342134</span><span class="o">)</span>
+    <span class="o">),</span>
+    <span class="n">where</span><span class="o">(</span>
+        <span class="n">keyIn</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span>
+    <span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">DELETE</span> <span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span> <span class="k">FROM</span> <span class="n">Account</span> <span class="k">USING</span> <span class="n">CONSISTENCY</span> <span class="n">ONE</span> <span class="k">AND</span> <span class="k">TIMESTAMP</span> <span class="mi">21342134</span> <span class="k">WHERE</span> <span class="k">KEY</span> <span class="k">in</span> <span class="p">(</span><span class="s1">'0'</span><span class="p">,</span> <span class="s1">'1'</span><span class="p">,</span> <span class="s1">'2'</span><span class="p">,</span> <span class="s1">'3'</span><span class="p">);</span>
+</pre></div>
+
+<p><a href="http://cassandra.apache.org/doc/cql/CQL.html#DELETE">http://cassandra.apache.org/doc/cql/CQL.html#DELETE</a></p>
+
+<h3>TRUNCATE</h3>
+
+<div class="highlight"><pre><span class="n">delete</span><span class="o">(</span>
+    <span class="n">columnFamily</span><span class="o">(</span><span class="s">"Account"</span><span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">TRUNCATE</span> <span class="n">Account</span><span class="p">;</span>
+</pre></div>
+
+<p><a href="http://cassandra.apache.org/doc/cql/CQL.html#TRUNCATE">http://cassandra.apache.org/doc/cql/CQL.html#TRUNCATE</a></p>
+
+<h3>BATCH</h3>
+
+<div class="highlight"><pre><span class="n">batch</span><span class="o">(</span>
+    <span class="n">writeOptions</span><span class="o">(</span>
+        <span class="n">consistency</span><span class="o">(</span><span class="n">ConsistencyType</span><span class="o">.</span><span class="na">ONE</span><span class="o">),</span>
+        <span class="n">ttl</span><span class="o">(</span><span class="mi">3600</span><span class="o">),</span>
+        <span class="n">timestamp</span><span class="o">(</span><span class="mi">2342134</span><span class="o">)</span>
+    <span class="o">),</span>
+    <span class="n">delete</span><span class="o">(</span>
+        <span class="n">columns</span><span class="o">(</span><span class="s">"a"</span><span class="o">,</span> <span class="s">"b"</span><span class="o">,</span> <span class="s">"c"</span><span class="o">),</span>
+        <span class="n">from</span><span class="o">(</span><span class="s">"ColumnFamily"</span><span class="o">)</span>
+    <span class="o">),</span>
+    <span class="n">insert</span><span class="o">(</span>
+        <span class="n">columnFamily</span><span class="o">(</span><span class="s">"Account"</span><span class="o">),</span>
+        <span class="n">into</span><span class="o">(</span><span class="s">"a"</span><span class="o">,</span> <span class="s">"b"</span><span class="o">,</span> <span class="s">"c"</span><span class="o">),</span>
+        <span class="n">values</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">)</span>
+    <span class="o">),</span>
+    <span class="n">update</span><span class="o">(</span>
+        <span class="n">columnFamily</span><span class="o">(</span><span class="s">"ColumnFamily"</span><span class="o">),</span>
+        <span class="n">set</span><span class="o">(</span>
+            <span class="n">assign</span><span class="o">(</span><span class="s">"propertya"</span><span class="o">,</span> <span class="mi">4</span><span class="o">)</span>
+        <span class="o">),</span>
+        <span class="n">where</span><span class="o">(</span>
+            <span class="n">key</span><span class="o">(</span><span class="mi">4</span><span class="o">)</span>
+        <span class="o">)</span>
+    <span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">BEGIN</span> <span class="n">BATCH</span> <span class="k">USING</span> <span class="n">CONSISTENCY</span> <span class="n">ONE</span> <span class="k">AND</span> <span class="n">TTL</span> <span class="mi">3600</span> <span class="k">AND</span> <span class="k">TIMESTAMP</span> <span class="mi">2342134</span>
+<span class="k">DELETE</span> <span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span> <span class="k">FROM</span> <span class="n">ColumnFamily</span><span class="p">;</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">Account</span> <span class="p">(</span><span class="s1">'a'</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">,</span> <span class="s1">'c'</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="s1">'0'</span><span class="p">,</span> <span class="s1">'1'</span><span class="p">,</span> <span class="s1">'2'</span><span class="p">);</span>
+<span class="k">UPDATE</span> <span class="n">ColumnFamily</span> <span class="k">SET</span> <span class="s1">'propertya'</span> <span class="o">=</span> <span class="s1">'4'</span> <span class="k">WHERE</span> <span class="k">KEY</span> <span class="o">=</span> <span class="s1">'4'</span><span class="p">;</span>
+<span class="n">APPLY</span> <span class="n">BATCH</span><span class="p">;</span>
+</pre></div>
+
+<p><a href="http://cassandra.apache.org/doc/cql/CQL.html#BATCH">http://cassandra.apache.org/doc/cql/CQL.html#BATCH</a></p>
+
+<h3>CREATE KEYSPACE</h3>
+
+<div class="highlight"><pre><span class="n">createKeyspace</span><span class="o">(</span>
+    <span class="n">keySpace</span><span class="o">(</span><span class="s">"KeySpaceName"</span><span class="o">),</span>
+    <span class="n">withStrategyClass</span><span class="o">(</span><span class="n">SimpleStrategy</span><span class="o">.</span><span class="na">class</span><span class="o">),</span>
+    <span class="n">strategyOptions</span><span class="o">(</span>
+        <span class="n">replicationFactor</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+    <span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">CREATE</span> <span class="n">KEYSPACE</span> <span class="n">KeySpaceName</span> <span class="k">WITH</span> <span class="n">strategy_class</span> <span class="o">=</span> <span class="n">SimpleStrategy</span> <span class="k">AND</span> <span class="n">strategy_options</span><span class="p">:</span><span class="n">replication_factor</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</pre></div>
+
+<p><a href="http://cassandra.apache.org/doc/cql/CQL.html#CREATEKEYSPACE">http://cassandra.apache.org/doc/cql/CQL.html#CREATEKEYSPACE</a></p>
+
+<h3>CREATE COLUMNFAMILY</h3>
+
+<div class="highlight"><pre><span class="n">createColumnFamily</span><span class="o">(</span>
+    <span class="n">columnFamily</span><span class="o">(</span><span class="s">"ColumnFamilyName"</span><span class="o">),</span>
+    <span class="n">columnDefinitions</span><span class="o">(</span>
+        <span class="n">primaryKey</span><span class="o">(</span><span class="s">"primaryKeyColumn"</span><span class="o">,</span> <span class="n">ColumnDataType</span><span class="o">.</span><span class="na">UUID</span><span class="o">),</span>
+        <span class="n">column</span><span class="o">(</span><span class="s">"a"</span><span class="o">,</span> <span class="n">ColumnDataType</span><span class="o">.</span><span class="na">TEXT</span><span class="o">),</span>
+        <span class="n">column</span><span class="o">(</span><span class="s">"b"</span><span class="o">,</span> <span class="n">ColumnDataType</span><span class="o">.</span><span class="na">INT</span><span class="o">)</span>
+    <span class="o">),</span>
+    <span class="n">storageOptions</span><span class="o">(</span>
+        <span class="n">storageOption</span><span class="o">(</span><span class="n">StorageParameter</span><span class="o">.</span><span class="na">COMMENT</span><span class="o">,</span> <span class="s">"comment"</span><span class="o">),</span>
+        <span class="n">storageOption</span><span class="o">(</span><span class="n">StorageParameter</span><span class="o">.</span><span class="na">READ_REPAIR_CHANCE</span><span class="o">,</span> <span class="s">"1"</span><span class="o">)</span>
+    <span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">CREATE</span> <span class="n">COLUMNFAMILY</span> <span class="n">ColumnFamilyName</span> <span class="p">(</span>
+    <span class="s1">'primaryKeyColumn'</span> <span class="n">uuid</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span>
+    <span class="s1">'a'</span> <span class="nb">text</span><span class="p">,</span>
+    <span class="s1">'b'</span> <span class="nb">int</span>
+<span class="p">)</span> <span class="k">WITH</span>
+    <span class="k">comment</span> <span class="o">=</span> <span class="k">comment</span> <span class="k">AND</span>
+    <span class="n">read_repair_chance</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</pre></div>
+
+<p><a href="http://cassandra.apache.org/doc/cql/CQL.html#CREATECOLUMNFAMILY">http://cassandra.apache.org/doc/cql/CQL.html#CREATECOLUMNFAMILY</a></p>
+
+<h3>CREATE INDEX</h3>
+
+<div class="highlight"><pre><span class="n">createIndex</span><span class="o">(</span>
+    <span class="n">onColumnFamily</span><span class="o">(</span><span class="s">"ColumnFamily"</span><span class="o">),</span>
+    <span class="n">indexName</span><span class="o">(</span><span class="s">"myIndex"</span><span class="o">),</span>
+    <span class="n">column</span><span class="o">(</span><span class="s">"myColumn"</span><span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">myIndex</span> <span class="k">ON</span> <span class="n">ColumnFamily</span> <span class="p">(</span><span class="s1">'myColumn'</span><span class="p">);</span>
+</pre></div>
+
+<p><a href="http://cassandra.apache.org/doc/cql/CQL.html#CREATEINDEX">http://cassandra.apache.org/doc/cql/CQL.html#CREATEINDEX</a></p>
+
+<h3>DROP KEYSPACE</h3>
+
+<div class="highlight"><pre><span class="n">drop</span><span class="o">(</span>
+    <span class="n">keySpace</span><span class="o">(</span><span class="s">"KeySpaceName"</span><span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">DROP</span> <span class="n">KEYSPACE</span> <span class="n">KeySpaceName</span><span class="p">;</span>
+</pre></div>
+
+<p><a href="http://cassandra.apache.org/doc/cql/CQL.html#DROPKEYSPACE">http://cassandra.apache.org/doc/cql/CQL.html#DROPKEYSPACE</a></p>
+
+<h3>DROP COLUMNFAMILY</h3>
+
+<div class="highlight"><pre><span class="n">drop</span><span class="o">(</span>
+    <span class="n">columnFamily</span><span class="o">(</span><span class="s">"ColumnFamilyName"</span><span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">DROP</span> <span class="n">COLUMNFAMILY</span> <span class="n">ColumnFamilyName</span><span class="p">;</span>
+</pre></div>
+
+<p><a href="http://cassandra.apache.org/doc/cql/CQL.html#DROPCOLUMNFAMILY">http://cassandra.apache.org/doc/cql/CQL.html#DROPCOLUMNFAMILY</a></p>
+
+<h3>DROP INDEX</h3>
+
+<div class="highlight"><pre><span class="n">drop</span><span class="o">(</span>
+    <span class="n">indexName</span><span class="o">(</span><span class="s">"myIndex"</span><span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">DROP</span> <span class="k">INDEX</span> <span class="n">myIndex</span><span class="p">;</span>
+</pre></div>
+
+<p><a href="http://cassandra.apache.org/doc/cql/CQL.html#DROPINDEX">http://cassandra.apache.org/doc/cql/CQL.html#DROPINDEX</a></p>
+
+<h3>ALTER COLUMNFAMILY</h3>
+
+<div class="highlight"><pre><span class="n">alterColumnFamily</span><span class="o">(</span>
+    <span class="n">columnFamily</span><span class="o">(</span><span class="s">"ColumnFamily"</span><span class="o">),</span>
+    <span class="n">add</span><span class="o">(</span><span class="s">"myColumn"</span><span class="o">,</span> <span class="n">ColumnDataType</span><span class="o">.</span><span class="na">INT</span><span class="o">)</span>
+<span class="o">)</span>
+</pre></div>
+
+<div class="highlight"><pre><span class="k">ALTER</span> <span class="n">COLUMNFAMILY</span> <span class="n">ColumnFamily</span> <span class="k">ADD</span> <span class="s1">'myColumn'</span> <span class="nb">int</span><span class="p">;</span>
+</pre></div>
+
+<p><a href="http://cassandra.apache.org/doc/cql/CQL.html#ALTERCOLUMNFAMILY">http://cassandra.apache.org/doc/cql/CQL.html#ALTERCOLUMNFAMILY</a></p>
+
+<h3>Value Converters</h3>
+
+<p>The Firebrand CQL Query Builder comes with a few utility converters that convert some common data types in their
+CQL value as mapped by Firebrand.</p>
+
+<p>All CQL value converters are implementers of <a href="https://github.com/47deg/firebrand/blob/master/src/main/java/org/firebrand/dao/cql.converters/CQLValueConverter.java">org.firebrand.dao.cql.converters.CQLValueConverter</a>.</p>
+
+<p>You may contribute your own converters or override the default configured ones with
+org.cassandraobjects.dao.cql.QueryBuilder#addConverter</p>
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/47deg">47deg</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-18433785-3");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
