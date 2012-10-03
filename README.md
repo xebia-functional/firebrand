@@ -1,6 +1,6 @@
 # Firebrand OCM
 
-Firebrand OCM is a simple library for persisting and querying [Java](http://en.wikipedia.org/wiki/Java_(programming_language))
+Firebrand OCM is a simple library for persisting and querying [Java](http://en.wikipedia.org/wiki/Java_language)
 Objects to a Cassandra Database. Firebrand's goal is to provide an elegant and simple interface to bring the power and scalability
 of [Apache Cassandra](http://cassandra.apache.org/) to your application.
 
