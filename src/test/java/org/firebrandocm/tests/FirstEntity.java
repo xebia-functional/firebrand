@@ -29,7 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-@ColumnFamily
+@ColumnFamily(consistencyLevel = ConsistencyLevel.ALL)
 @NamedQueries({
 		@NamedQuery(name = FirstEntity.QUERY_ALL_ENTITIES, query = "select * from FirstEntity"),
 		@NamedQuery(name = FirstEntity.QUERY_ALL_ENTITIES_WITH_PARAMS, query = "select * from FirstEntity where KEY = :key")

@@ -558,8 +558,17 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
     private Keyspace getKeyspace(ClassMetadata<?> classMetadata) {
         String keySpace = classMetadata.getKeySpace();
         keySpace = keySpace != null ? keySpace : getDefaultKeySpace();
-        Keyspace keyspace = HFactory.createKeyspace(keySpace, cluster);
+        Keyspace keyspace = HFactory.createKeyspace(keySpace, cluster, getColumnFamilyConsistencyLevel(classMetadata));
         return keyspace;
+    }
+
+    /**
+     * Get the default consistency level for a keyspace given the class metadata
+     * @param classMetadata the class metadata
+     * @return the configured or default consistency level
+     */
+    private ColumnFamilyConsistencyLevel getColumnFamilyConsistencyLevel(ClassMetadata<?> classMetadata) {
+        return new ColumnFamilyConsistencyLevel(classMetadata.getConsistencyLevel());
     }
 
     /**
@@ -616,7 +625,7 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
     private Mutator<String> getMutator(ClassMetadata classMetadata) {
         String keySpace = classMetadata.getKeySpace();
         keySpace = keySpace != null ? keySpace : getDefaultKeySpace();
-        Keyspace keyspace = HFactory.createKeyspace(keySpace, cluster);
+        Keyspace keyspace = HFactory.createKeyspace(keySpace, cluster, getColumnFamilyConsistencyLevel(classMetadata));
         return HFactory.createMutator(keyspace, StringSerializer.get(), new BatchSizeHint(1, classMetadata.getMutationProperties().size()));
     }
 
@@ -946,12 +955,5 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
             return delegate;
         }
 
-        public static void main() throws Exception {
-            PersistenceFactory persistenceFactory = new Builder()
-                    .autoDiscoverHosts(true)
-                    .entities(Arrays.<Class<?>>asList(
-                            Event.class
-                    )).build();
-        }
     }
 }
