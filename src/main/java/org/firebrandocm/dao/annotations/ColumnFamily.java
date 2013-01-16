@@ -64,6 +64,12 @@ public @interface ColumnFamily {
 	 */
 	Class<? extends AbstractType> defaultValidationClass() default BytesType.class;
 
+    /**
+     *
+     * @return the consistency level used for operations on this column family
+     */
+    ConsistencyLevel consistencyLevel() default ConsistencyLevel.ONE;
+
 	/**
 	 *
 	 * @return the time to wait before garbage collecting tombstones (deletion markers).

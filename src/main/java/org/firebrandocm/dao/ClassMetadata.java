@@ -167,6 +167,11 @@ public class ClassMetadata<T> {
      */
     private Map<Event.Entity, Set<Method>> entityEventListenersMap = new TreeMap<Event.Entity, Set<Method>>();
 
+    /**
+     * the keyspace consistency level
+     */
+    private ConsistencyLevel consistencyLevel;
+
     /* Static Methods */
 
     /**
@@ -207,6 +212,7 @@ public class ClassMetadata<T> {
         //If this is a top level structure that holds a column family
         if (target.isAnnotationPresent(ColumnFamily.class)) {
             ColumnFamily columnFamilyAnnotation = target.getAnnotation(ColumnFamily.class);
+            consistencyLevel = columnFamilyAnnotation.consistencyLevel();
             counterColumnFamily = columnFamilyAnnotation.defaultValidationClass() == CounterColumnType.class;
             keySpace = StringUtils.defaultIfEmpty(columnFamilyAnnotation.keySpace(), persistenceFactory.getDefaultKeySpace());
             columnFamily = target.getSimpleName();
@@ -794,5 +800,13 @@ public class ClassMetadata<T> {
      */
     public boolean isLazyProperty(String property) {
         return lazyProperties.contains(property);
+    }
+
+    /**
+     *
+     * @return the keyspace consistency level
+     */
+    public ConsistencyLevel getConsistencyLevel() {
+        return consistencyLevel;
     }
 }
