@@ -74,6 +74,12 @@ The Persistence Factory is ment to be cached and reused throught the application
     </bean>
 ```
 
+A handy way of handling multiple entities without declaring each exists. Declare a base package where all classes will be added to your PersistenceFactory :
+
+```xml
+         <property name="entitiesPkg" value="com.yourcompany.domain">
+```
+
 ```java
 @Autowired
 private PersistenceFactory persistenceFactory
