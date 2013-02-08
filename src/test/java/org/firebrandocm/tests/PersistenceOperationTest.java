@@ -41,7 +41,8 @@ public class PersistenceOperationTest extends HectorAbstractTestCase {
 
 	@BeforeClass
 	public static void init() throws Exception {
-		initWithClasses(FirstEntity.class, SecondEntity.class, FirstEntityCounter.class);
+		//initWithClasses(FirstEntity.class, SecondEntity.class, FirstEntityCounter.class);
+		initWithClasses("org.firebrandocm.tests");
 	}
 
 	/**
