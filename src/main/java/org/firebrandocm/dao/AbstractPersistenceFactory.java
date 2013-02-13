@@ -29,14 +29,17 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.firebrandocm.dao.annotations.ColumnFamily;
 import org.firebrandocm.dao.cql.QueryBuilder;
 import org.firebrandocm.dao.events.*;
 import org.firebrandocm.dao.impl.*;
 import org.firebrandocm.dao.ocmcql.CQLMappedCollectionValueConverter;
 import org.firebrandocm.dao.ocmcql.CQLMappedEntityValueConverter;
+import org.firebrandocm.dao.utils.ClassUtil;
 import org.firebrandocm.dao.utils.ObjectUtils;
 import org.firebrandocm.dao.utils.embedded.EmbeddedCassandraServer;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
@@ -396,6 +399,15 @@ public abstract class AbstractPersistenceFactory implements PersistenceFactory {
      */
     public void setEntities(List<Class<?>> entities) {
         this.entities = entities;
+    }
+
+    /**
+     * Sets the factory entities base package
+     *
+     * @param entitiesPkg
+     */
+    public void setEntitiesPkg(String entitiesPkg) throws IOException, ClassNotFoundException {
+      setEntities(ClassUtil.get(entitiesPkg, ColumnFamily.class));
     }
 
     /**

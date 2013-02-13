@@ -21,7 +21,9 @@ package org.firebrandocm.tests;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.firebrandocm.dao.Query;
+import org.firebrandocm.dao.annotations.ColumnFamily;
 import org.firebrandocm.dao.impl.hector.HectorPersistenceFactory;
+import org.firebrandocm.dao.utils.ClassUtil;
 import org.junit.AfterClass;
 import org.junit.Before;
 
@@ -63,7 +65,23 @@ public abstract class HectorAbstractTestCase {
 	protected static List<Class<?>> persistentClasses;
 
 
-	public static void initWithClasses(Class<?>... clazzez) throws Exception {
+    public static void initWithClasses(String clazzezPkg) throws Exception {
+      factory = new HectorPersistenceFactory();
+      factory.setDefaultKeySpace(DEFAULT_KEYSPACE);
+      factory.setContactNodes(new String[]{RPC_LISTEN_ADDRESS});
+      factory.setPoolName("Main");
+      factory.setDebug(false);
+      factory.setThriftPort(RPC_PORT);
+      factory.setStartEmbeddedServer(START_EMBEDDED_SERVER);
+      factory.setEmbeddedServerBaseDir(BASE_DIRECTORY);
+      factory.setCleanupDirectories(CLEAN_UP_DIRECTORIES);
+      factory.setEntitiesPkg( clazzezPkg );
+      factory.setDropOnDestroy(DROP_ON_DESTROY);
+      factory.init();
+      persistentClasses = ClassUtil.get( clazzezPkg, ColumnFamily.class );
+    }
+
+    public static void initWithClasses(Class<?>... clazzez) throws Exception {
 		List<Class<?>> classList = Arrays.asList(clazzez);
 		factory = new HectorPersistenceFactory();
 		factory.setDefaultKeySpace(DEFAULT_KEYSPACE);
