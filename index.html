@@ -39,7 +39,9 @@
         <ul></ul>
       </nav>
       <section>
-        <h1>Firebrand OCM</h1>
+        <p><a href="undefined"><img src="https://travis-ci.org/47deg/firebrand.png?branch=master" alt="Build Status"></a></p>
+
+<h1>Firebrand OCM</h1>
 
 <p>Firebrand OCM is a simple library for persisting and querying <a href="http://en.wikipedia.org/wiki/Java_language">Java</a>
 Objects to a Cassandra Database. Firebrand's goal is to provide an elegant and simple interface to bring the power and scalability
@@ -109,6 +111,11 @@ The Persistence Factory is ment to be cached and reused throught the application
             <span class="nt">&lt;/list&gt;</span>
         <span class="nt">&lt;/property&gt;</span>
     <span class="nt">&lt;/bean&gt;</span>
+</pre></div>
+
+<p>A handy way of handling multiple entities without declaring each exists. Declare a base package where all classes will be added to your PersistenceFactory :</p>
+
+<div class="highlight"><pre>         <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"entitiesPkg"</span> <span class="na">value=</span><span class="s">"com.yourcompany.domain"</span><span class="nt">&gt;</span>
 </pre></div>
 
 <div class="highlight"><pre><span class="nd">@Autowired</span>
@@ -231,11 +238,11 @@ same row.</p>
 <span class="o">}</span>
 </pre></div>
 
-<h3><a href="https://github.com/key" class="user-mention">@key</a></h3>
+<h3><a href="https://github.com/Key" class="user-mention">@Key</a></h3>
 
-<h3><a href="https://github.com/column" class="user-mention">@column</a></h3>
+<h3><a href="https://github.com/Column" class="user-mention">@Column</a></h3>
 
-<p>The field <em><a href="https://github.com/column" class="user-mention">@column</a></em> annotation declares a field as a column. All fields are implicit considered as columns even when they
+<p>The field <em><a href="https://github.com/Column" class="user-mention">@Column</a></em> annotation declares a field as a column. All fields are implicit considered as columns even when they
 are not annotated as such. To selectively ignore fields see <a href="#@transient">Transient</a>.</p>
 
 <div class="highlight"><pre><span class="nd">@ColumnFamily</span>
@@ -392,9 +399,9 @@ by the PersistenceFactory.</p>
 <span class="o">}</span>
 </pre></div>
 
-<h3><a href="https://github.com/transient" class="user-mention">@transient</a></h3>
+<h3><a href="https://github.com/Transient" class="user-mention">@Transient</a></h3>
 
-<p>Fields declared as <em><a href="https://github.com/transient" class="user-mention">@transient</a></em> will be ignored for any persistence purposes.</p>
+<p>Fields declared as <em><a href="https://github.com/Transient" class="user-mention">@Transient</a></em> will be ignored for any persistence purposes.</p>
 
 <div class="highlight"><pre><span class="nd">@ColumnFamily</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Account</span> <span class="o">{</span>
