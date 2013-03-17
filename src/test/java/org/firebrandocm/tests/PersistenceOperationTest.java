@@ -25,6 +25,7 @@ import org.firebrandocm.dao.cql.clauses.Predicate;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -242,6 +243,16 @@ public class PersistenceOperationTest extends HectorAbstractTestCase {
 		factory.persist(firstEntity);
 		testPropertyLazyAccess(FirstEntity.class, firstEntity.getId(), "listProperty");
 	}
+
+    @Test
+    public void testEQByteArrayProperties() throws NoSuchFieldException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, UnsupportedEncodingException {
+        String test = UUID.randomUUID().toString();
+        FirstEntity firstEntity = new FirstEntity();
+        firstEntity.setSomeBytes(test.getBytes());
+        factory.persist(firstEntity);
+        FirstEntity loadedEntity = factory.get(FirstEntity.class, firstEntity.getId());
+        assertEquals(new String(loadedEntity.getSomeBytes(), "UTF-8"), test);
+    }
 
 	@Test
 	public void testEQLongIndexedProperty() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
