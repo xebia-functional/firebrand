@@ -820,6 +820,8 @@ public abstract class AbstractPersistenceFactory implements PersistenceFactory {
             typeConverters.put(long.class, new LongTypeConverter());
             typeConverters.put(double.class, new DoubleTypeConverter());
             typeConverters.put(int.class, new IntegerTypeConverter());
+            typeConverters.put(byte[].class, new ByteArrayTypeConverter());
+            typeConverters.put(Byte[].class, new ByteArrayTypeConverter());
             typeConverters.put(Object.class, new ObjectBytesTypeConverter());
         }
     }
