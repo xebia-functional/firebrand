@@ -61,6 +61,12 @@ public class FirstEntity {
 	@Column(validationClass = LongType.class)
 	private Date otherDate;
 
+    @Column(validationClass = BytesType.class)
+    private byte[] someBytes;
+
+    @Column(validationClass = BytesType.class)
+    private Byte[] someMoreBytes;
+
 	@Mapped
 	private FirstEntityCounter counter;
 
@@ -225,7 +231,23 @@ public class FirstEntity {
 		this.prePersistProperty = prePersistProperty;
 	}
 
-	@OnEvent(Event.Entity.PRE_PERSIST)
+    public byte[] getSomeBytes() {
+        return someBytes;
+    }
+
+    public void setSomeBytes(byte[] someBytes) {
+        this.someBytes = someBytes;
+    }
+
+    public Byte[] getSomeMoreBytes() {
+        return someMoreBytes;
+    }
+
+    public void setSomeMoreBytes(Byte[] someMoreBytes) {
+        this.someMoreBytes = someMoreBytes;
+    }
+
+    @OnEvent(Event.Entity.PRE_PERSIST)
 	public void onPrePersist() {
 		setPrePersistProperty(UUID.randomUUID().toString());
 	}
