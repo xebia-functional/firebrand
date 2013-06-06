@@ -36,7 +36,7 @@ public class BooleanTypeConverter implements TypeConverter<Boolean> {
 		return BooleanSerializer.get().toByteBuffer(value);
 	}
 
-	public Boolean fromValue(ByteBuffer value) {
+	public Boolean fromValue(ByteBuffer value, Class<Boolean> targetType) {
 		return BooleanSerializer.get().fromByteBuffer(value);
 	}
 }

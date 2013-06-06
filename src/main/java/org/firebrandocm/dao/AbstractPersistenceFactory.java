@@ -821,6 +821,7 @@ public abstract class AbstractPersistenceFactory implements PersistenceFactory {
             typeConverters.put(Boolean.class, new BooleanTypeConverter());
             typeConverters.put(Long.class, new LongTypeConverter());
             typeConverters.put(Double.class, new DoubleTypeConverter());
+            typeConverters.put(Enum.class, new EnumTypeConverter());
             typeConverters.put(Integer.class, new IntegerTypeConverter());
             typeConverters.put(Date.class, new DateTypeConverter());
             typeConverters.put(boolean.class, new BooleanTypeConverter());
@@ -991,6 +992,6 @@ public abstract class AbstractPersistenceFactory implements PersistenceFactory {
     protected Object convertRead(Class<?> type, ByteBuffer value) throws Exception {
         TypeConverter<Object> converter = (TypeConverter<Object>) getTypeConverter(type);
         deffenseConverter(converter, type);
-        return converter.fromValue(value);
+        return converter.fromValue(value, (Class<Object>) type);
     }
 }

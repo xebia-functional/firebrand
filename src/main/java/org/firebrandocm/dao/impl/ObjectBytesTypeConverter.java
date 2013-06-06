@@ -38,7 +38,7 @@ public class ObjectBytesTypeConverter implements TypeConverter<Object> {
 	}
 
 	@Override
-	public Object fromValue(ByteBuffer value) throws Exception {
+	public Object fromValue(ByteBuffer value, Class<Object> targetType) throws Exception {
 		return ObjectSerializer.get().fromByteBuffer(value);
 	}
 }

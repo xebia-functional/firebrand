@@ -141,6 +141,15 @@ public class PersistenceOperationTest extends HectorAbstractTestCase {
 		}
 	}
 
+    @Test
+    public void testEnumProperty() {
+        FirstEntity firstEntity = factory.getInstance(FirstEntity.class);
+        firstEntity.setTestEnum(TestEnum.A);
+        factory.persist(firstEntity);
+        FirstEntity loadedEntity = factory.get(FirstEntity.class, firstEntity.getId());
+        assertEquals(TestEnum.A, loadedEntity.getTestEnum());
+    }
+
 	@Test
 	public void testEmbeddedEntity() {
 		OtherEntity otherEntity = new OtherEntity();

@@ -36,7 +36,7 @@ public class StringTypeConverter implements TypeConverter<String> {
 		return StringSerializer.get().toByteBuffer(value);
 	}
 
-	public String fromValue(ByteBuffer value) {
+	public String fromValue(ByteBuffer value, Class<String> targetType) {
 		return StringSerializer.get().fromByteBuffer(value);
 	}
 }
