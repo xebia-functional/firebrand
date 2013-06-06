@@ -407,7 +407,7 @@ public abstract class AbstractPersistenceFactory implements PersistenceFactory {
      * @param entitiesPkg
      */
     public void setEntitiesPkg(String entitiesPkg) throws IOException, ClassNotFoundException {
-      setEntities(ClassUtil.get(entitiesPkg, ColumnFamily.class));
+        setEntities(ClassUtil.get(entitiesPkg, ColumnFamily.class));
     }
 
     /**
@@ -532,21 +532,28 @@ public abstract class AbstractPersistenceFactory implements PersistenceFactory {
      * @param entities the object entities
      */
     protected void createKeysIfNeeded(Object... entities) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        createKeysIfNeeded(new HashSet<Object>(), entities);
+    }
+
+    private void createKeysIfNeeded(Set<Object> processed, Object... entities) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         for (Object entity : entities) {
-            String key = getKey(entity);
-            if (key == null) {
-                key = ObjectUtils.newTimeUuid().toString();
-            }
-            ClassMetadata<?> metadata = getClassMetadata(entity.getClass());
-            PropertyUtils.setProperty(entity, metadata.getKeyProperty(), key);
-            for (String mappedProperty : metadata.getMappedProperties()) {
-                Object mappedEntity = PropertyUtils.getProperty(entity, mappedProperty);
-                if (mappedEntity != null) {
-                    if (Collection.class.isAssignableFrom(mappedEntity.getClass())) {
-                        Collection<?> nestedEntities = (Collection) mappedEntity;
-                        createKeysIfNeeded(nestedEntities.toArray());
-                    } else {
-                        createKeysIfNeeded(mappedEntity);
+            if (!processed.contains(entity)) {
+                processed.add(entity);
+                String key = getKey(entity);
+                if (key == null) {
+                    key = ObjectUtils.newTimeUuid().toString();
+                }
+                ClassMetadata<?> metadata = getClassMetadata(entity.getClass());
+                PropertyUtils.setProperty(entity, metadata.getKeyProperty(), key);
+                for (String mappedProperty : metadata.getMappedProperties()) {
+                    Object mappedEntity = PropertyUtils.getProperty(entity, mappedProperty);
+                    if (mappedEntity != null) {
+                        if (Collection.class.isAssignableFrom(mappedEntity.getClass())) {
+                            Collection<?> nestedEntities = (Collection) mappedEntity;
+                            createKeysIfNeeded(processed, nestedEntities.toArray());
+                        } else {
+                            createKeysIfNeeded(processed, mappedEntity);
+                        }
                     }
                 }
             }

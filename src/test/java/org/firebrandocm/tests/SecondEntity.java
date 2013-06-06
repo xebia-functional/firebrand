@@ -31,6 +31,9 @@ public class SecondEntity {
 
 	private String name;
 
+    @Mapped
+    private FirstEntity mappedFirstEntity;
+
 	@Mapped
 	private SecondEntity recursiveMapped;
 
@@ -69,7 +72,15 @@ public class SecondEntity {
 		this.embedEntityInRecursiveMappedEntity = embedEntityInRecursiveMappedEntity;
 	}
 
-	@Override
+    public FirstEntity getMappedFirstEntity() {
+        return mappedFirstEntity;
+    }
+
+    public void setMappedFirstEntity(FirstEntity mappedFirstEntity) {
+        this.mappedFirstEntity = mappedFirstEntity;
+    }
+
+    @Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;

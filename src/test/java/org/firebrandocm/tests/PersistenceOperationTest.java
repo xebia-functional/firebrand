@@ -106,6 +106,20 @@ public class PersistenceOperationTest extends HectorAbstractTestCase {
 		assertEquals(secondEntity.getId(), loadedEntity.getMappedEntity().getId());
 	}
 
+    @Test
+    public void testMappedRecursiveEntity() {
+        FirstEntity firstEntity = factory.getInstance(FirstEntity.class);
+        SecondEntity secondEntity = factory.getInstance(SecondEntity.class);
+        factory.persist(firstEntity);
+        factory.persist(secondEntity);
+        firstEntity.setMappedEntity(secondEntity);
+        secondEntity.setMappedFirstEntity(firstEntity);
+        factory.persist(firstEntity);
+        factory.persist(secondEntity);
+        assertEquals(firstEntity, secondEntity.getMappedFirstEntity());
+        assertEquals(secondEntity, firstEntity.getMappedEntity());
+    }
+
 	@Test
 	public void testMappedCollection() {
 		int amount = 5;
