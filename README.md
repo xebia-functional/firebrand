@@ -39,7 +39,7 @@ repository where the Firebrand snapshot artifacts are being deployed. Firebrand 
 ```
 ## JAR and others
 
-You can get the releases, snapshots and other forms in which Firebrand is distributed from the [Downloads](https://github.com/47deg/firebrand/downloads) page.
+Latest snapshots in jar, javadoc and sources forms are published to the sonatype snapshot repository [here](https://oss.sonatype.org/content/repositories/snapshots/org/firebrandocm/firebrand/1.0-SNAPSHOT/)
 
 # Usage
 
