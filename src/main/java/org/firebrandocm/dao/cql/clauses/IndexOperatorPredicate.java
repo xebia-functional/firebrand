@@ -57,6 +57,6 @@ public class IndexOperatorPredicate implements Predicate {
 			case GT: operatorToken = ">"; break;
 			case GTE: operatorToken = ">="; break;
 		}
-		return String.format(String.format("%s %s '%s'", column != null ? String.format("'%s'", column) : "KEY", operatorToken, value));
+		return String.format("%s %s '%s'", column != null ? String.format("'%s'", column) : "KEY", operatorToken, value);
 	}
 }
