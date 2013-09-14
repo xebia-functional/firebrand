@@ -137,21 +137,6 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>com.github.github</groupId>
-                <artifactId>downloads-maven-plugin</artifactId>
-                <version>0.5</version>
-                <configuration>
-                    <description>${project.version} release of ${project.name}</description>
-                    <override>true</override>
-                    <includeAttached>true</includeAttached>
-                    <!--<suffix>.${maven.build.timestamp}</suffix>-->
-                    <includes>
-                        <include>*.jar</include>
-                    </includes>
-                    <override>true</override>
-                </configuration>
-            </plugin>
-            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptorRefs>
