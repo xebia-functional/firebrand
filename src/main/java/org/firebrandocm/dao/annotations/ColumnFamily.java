@@ -83,6 +83,12 @@ public @interface ColumnFamily {
 	 */
 	String keySpace() default "";
 
+    /**
+     *
+     * @return the physical column family name this entity will be mapped to
+     */
+    String name() default "";
+
 	/**
 	 *
 	 * @return the number of keys per sstable whose
