@@ -215,7 +215,7 @@ public class ClassMetadata<T> {
             consistencyLevel = columnFamilyAnnotation.consistencyLevel();
             counterColumnFamily = columnFamilyAnnotation.defaultValidationClass() == CounterColumnType.class;
             keySpace = StringUtils.defaultIfEmpty(columnFamilyAnnotation.keySpace(), persistenceFactory.getDefaultKeySpace());
-            columnFamily = target.getSimpleName();
+            columnFamily = StringUtils.defaultIfEmpty(columnFamilyAnnotation.name(), target.getSimpleName());
             initializeColumnFamilyDefinition();
             processFields(target, "");
             processMethods(target);
