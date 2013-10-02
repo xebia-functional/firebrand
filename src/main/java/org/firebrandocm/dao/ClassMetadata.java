@@ -31,6 +31,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.firebrandocm.dao.annotations.*;
 import org.firebrandocm.dao.events.Event;
+import org.firebrandocm.dao.utils.ClassUtil;
 import org.firebrandocm.dao.utils.ObjectUtils;
 
 import java.beans.IntrospectionException;
@@ -215,7 +216,7 @@ public class ClassMetadata<T> {
             consistencyLevel = columnFamilyAnnotation.consistencyLevel();
             counterColumnFamily = columnFamilyAnnotation.defaultValidationClass() == CounterColumnType.class;
             keySpace = StringUtils.defaultIfEmpty(columnFamilyAnnotation.keySpace(), persistenceFactory.getDefaultKeySpace());
-            columnFamily = StringUtils.defaultIfEmpty(columnFamilyAnnotation.name(), target.getSimpleName());
+            columnFamily = ClassUtil.getColumnFamilyName(target);
             initializeColumnFamilyDefinition();
             processFields(target, "");
             processMethods(target);

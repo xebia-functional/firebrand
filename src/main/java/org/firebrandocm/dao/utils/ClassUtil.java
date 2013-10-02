@@ -1,5 +1,7 @@
 package org.firebrandocm.dao.utils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -87,4 +89,16 @@ public class ClassUtil {
     }
     return classes;
   }
+
+    /**
+     * Resolves the physical column family name for this class by checking for a @ColumnFamily(name = ) annotation
+     * or if not present falls back to class.getSimpleName()
+     *
+     * @param entityClass class to look for column family annotation
+     * @return the configured column family name as a String
+     */
+    public static String getColumnFamilyName(Class<?> entityClass) {
+        org.firebrandocm.dao.annotations.ColumnFamily columnFamilyAnnotation = entityClass.getAnnotation(org.firebrandocm.dao.annotations.ColumnFamily.class);
+        return StringUtils.defaultIfEmpty(columnFamilyAnnotation.name(), entityClass.getSimpleName());
+    }
 }
