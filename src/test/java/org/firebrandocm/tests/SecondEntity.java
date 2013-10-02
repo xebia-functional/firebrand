@@ -23,7 +23,7 @@ import org.firebrandocm.dao.annotations.Embedded;
 import org.firebrandocm.dao.annotations.Key;
 import org.firebrandocm.dao.annotations.Mapped;
 
-@ColumnFamily
+@ColumnFamily(name = "class_secondentity")
 public class SecondEntity {
 
 	@Key
