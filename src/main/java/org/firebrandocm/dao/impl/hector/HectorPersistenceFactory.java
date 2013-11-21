@@ -795,7 +795,7 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
      * It delegates its operations to AbstractPersistenceFactory#convertRead and AbstractPersistenceFactory#convertWrite
      * @param <Type>
      */
-    private final class TypeConverterSerializer<Type> extends AbstractSerializer<Type> {
+    public final class TypeConverterSerializer<Type> extends AbstractSerializer<Type> {
         /**
          * The target class
          */
