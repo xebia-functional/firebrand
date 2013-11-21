@@ -231,6 +231,18 @@ public class QueryBuilderParserTest {
 		);
 	}
 
+    @Test
+    public void testDeleteEmpty() throws Exception {
+        test("DELETE FROM ColumnFamily WHERE KEY in ('0', '1', '2', '3');",
+                delete(
+                        from("ColumnFamily"),
+                        where(
+                                keyIn(0, 1, 2, 3)
+                        )
+                )
+        );
+    }
+
 	@Test
 	public void testTruncate() throws Exception {
 		test(
