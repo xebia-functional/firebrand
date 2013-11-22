@@ -804,14 +804,14 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
         /**
          * Default constructor
          */
-        private TypeConverterSerializer() {
+        public TypeConverterSerializer() {
         }
 
         /**
          * Constructor based on a target object
          * @param targetObject the target object
          */
-        private TypeConverterSerializer(Type targetObject) {
+        public TypeConverterSerializer(Type targetObject) {
             this.target = targetObject != null ? targetObject.getClass() : null;
         }
 
@@ -819,7 +819,7 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
          * Constructor based on target object class
          * @param target the target object class
          */
-        private TypeConverterSerializer(Class<Type> target) {
+        public TypeConverterSerializer(Class<Type> target) {
             this.target = target;
         }
 
