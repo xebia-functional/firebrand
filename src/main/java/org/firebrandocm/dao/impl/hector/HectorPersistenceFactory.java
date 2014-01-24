@@ -706,7 +706,7 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
      * @param value    the value
      * @param entity   the entity the property belongs to
      */
-    private void updateSimpleColumn(Mutator<String> mutator, String key, ClassMetadata metadata, String property, Object value, Object entity) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, IOException {
+    protected void updateSimpleColumn(Mutator<String> mutator, String key, ClassMetadata metadata, String property, Object value, Object entity) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, IOException {
         String colFamily = metadata.getColumnFamily();
         if (!metadata.isAssociationContainer(property)) { //association container properties are ignored since their embedded properties are flatten into the column family
             if (value == null) {
