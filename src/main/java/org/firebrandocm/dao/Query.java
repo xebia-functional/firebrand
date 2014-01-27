@@ -64,7 +64,7 @@ public class Query {
 		this.query = buildQuery(query);
 	}
 
-	private String buildQuery(String query) {
+	protected String buildQuery(String query) {
 		String queryText = ClassMetadata.getNullSafeNamedQuery(query);
 		if (queryText == null) {
 			queryText = query;
