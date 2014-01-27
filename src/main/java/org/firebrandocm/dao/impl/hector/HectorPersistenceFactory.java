@@ -369,7 +369,7 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
      * @param <V> the value type
      * @return the CqlQuery
      */
-    private <T, V> CqlExecuteQuery<V> getCQLExecuteQuery(String query) {
+    protected <T, V> CqlExecuteQuery<V> getCQLExecuteQuery(String query) {
         CqlExecuteQuery<V> cqlQuery = new CqlExecuteQuery<V>(getDefaultKeyspace());
         cqlQuery.setQuery(query);
         return cqlQuery;
@@ -403,7 +403,7 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
      * @param query a cql query
      * @return the resulting columns and their values
      */
-    private Map<String, ByteBuffer> getColumns(String query) {
+    protected Map<String, ByteBuffer> getColumns(String query) {
         Map<String, ByteBuffer> resultMap = new LinkedHashMap<String, ByteBuffer>();
         CqlQuery<String, String, Object> cqlQuery = new CqlQuery<String, String, Object>(getDefaultKeyspace(), StringSerializer.get(), StringSerializer.get(), new TypeConverterSerializer<Object>());
         cqlQuery.setQuery(query);
@@ -450,7 +450,7 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
     /**
      * Private helper to initialize the schema
      */
-    private void initializeSchema() throws Exception {
+    protected void initializeSchema() throws Exception {
         if (keyspaceDefinitions.size() == 0)
             throw new IllegalStateException("no keyspace definitions founds, maybe add some entities to the factory");
         for (KeyspaceDefinition keyspaceDefinition : ThriftKsDef.fromThriftList(new ArrayList<KsDef>(keyspaceDefinitions.values()))) {
@@ -483,7 +483,7 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
      * @param keyspaceDefinition     the keyspace definition
      * @return true if the column family is already present in the keyspace
      */
-    private boolean keyspaceContainsColumnFamily(ColumnFamilyDefinition columnFamilyDefinition, KeyspaceDefinition keyspaceDefinition) {
+    protected boolean keyspaceContainsColumnFamily(ColumnFamilyDefinition columnFamilyDefinition, KeyspaceDefinition keyspaceDefinition) {
         boolean contains = false;
         for (ColumnFamilyDefinition columnFamilyDefinitionEntry : keyspaceDefinition.getCfDefs()) {
             if (columnFamilyDefinitionEntry.getName().equals(columnFamilyDefinition.getName())) {
@@ -501,7 +501,7 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
      * @param keyspaceDefinition the keyspace
      * @return the column family if found, null otherwise
      */
-    private ColumnFamilyDefinition getColumnFamilyFromKeyspace(String name, KeyspaceDefinition keyspaceDefinition) {
+    protected ColumnFamilyDefinition getColumnFamilyFromKeyspace(String name, KeyspaceDefinition keyspaceDefinition) {
         ColumnFamilyDefinition definition = null;
         for (ColumnFamilyDefinition columnFamilyDefinitionEntry : keyspaceDefinition.getCfDefs()) {
             if (columnFamilyDefinitionEntry.getName().equals(name)) {
