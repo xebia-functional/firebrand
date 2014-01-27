@@ -902,6 +902,6 @@ limitations under the License.
 [1]: http://dl.clinkerhq.com/assets/badge/clinker-badge_125x125.png
 [2]: http://clinkerhq.com
 [3]: https://clinker.47deg.com/desktop/plugin/public/status/Firebrand
-[4]: https://clinker.47deg.com/jenkins/view/Appsly/job/Firebrand/
+[4]: https://clinker.47deg.com/jenkins/job/Firebrand/
 
 
