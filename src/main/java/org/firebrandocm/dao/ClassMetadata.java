@@ -230,7 +230,7 @@ public class ClassMetadata<T> {
     /**
      * Private helper to initialize a column family definition
      */
-    private void initializeColumnFamilyDefinition() throws ClassNotFoundException {
+    protected void initializeColumnFamilyDefinition() throws ClassNotFoundException {
         columnFamilyDefinition = new CfDef();
         columnFamilyDefinition.setName(columnFamily);
         columnFamilyDefinition.setKeyspace(getKeySpace());
@@ -259,7 +259,7 @@ public class ClassMetadata<T> {
      * @param target the target class
      * @param prefix a potential prefix utilized for deep nested properties
      */
-    private void processFields(Class<?> target, String prefix) throws IntrospectionException, ClassNotFoundException {
+    protected void processFields(Class<?> target, String prefix) throws IntrospectionException, ClassNotFoundException {
         if (StringUtils.isNotBlank(prefix)) {
             prefix += ".";
         }
@@ -275,7 +275,7 @@ public class ClassMetadata<T> {
      * @param propertyName the element name
      * @param type         the property type
      */
-    private void processElement(Field element, String propertyName, Class<?> type) throws ClassNotFoundException, IntrospectionException {
+    protected void processElement(Field element, String propertyName, Class<?> type) throws ClassNotFoundException, IntrospectionException {
         if (valid(element, propertyName, type)) {
             if (element.isAnnotationPresent(Embedded.class)) {
                 processEmbeddedEntity(type, propertyName);
@@ -303,7 +303,7 @@ public class ClassMetadata<T> {
      * @param type    the field type
      * @return if the field should be considered for persistence
      */
-    private boolean valid(Field element, String name, Class<?> type) {
+    protected boolean valid(Field element, String name, Class<?> type) {
         return !name.equals(CLASS_PROPERTY)
                 && !(element.isAnnotationPresent(Transient.class))
                 && !name.equals(keyProperty)
@@ -317,7 +317,7 @@ public class ClassMetadata<T> {
      * @param type         the type
      * @param propertyName the property name
      */
-    private void processEmbeddedEntity(Class<?> type, String propertyName) throws ClassNotFoundException, IntrospectionException {
+    protected void processEmbeddedEntity(Class<?> type, String propertyName) throws ClassNotFoundException, IntrospectionException {
         embeddedEntities.add(propertyName);
         propertiesTypesMap.put(propertyName, type);
         mutationProperties.add(propertyName);
@@ -333,7 +333,7 @@ public class ClassMetadata<T> {
      * @param element
      * @param propertyName the property name
      */
-    private void processMappedEntity(Class<?> type, Field element, String propertyName) throws ClassNotFoundException, IntrospectionException {
+    protected void processMappedEntity(Class<?> type, Field element, String propertyName) throws ClassNotFoundException, IntrospectionException {
         Mapped mapped = element.getAnnotation(Mapped.class);
         mappedEntities.add(propertyName);
         propertiesTypesMap.put(propertyName, type);
@@ -346,7 +346,7 @@ public class ClassMetadata<T> {
     }
 
     /**
-     * Private helper that caches information for a property for further persistence consideration
+     * Protected helper that caches information for a property for further persistence consideration
      *
      * @param colAnnotation   the column annotation
      * @param propertyName    the property name
@@ -356,7 +356,7 @@ public class ClassMetadata<T> {
      * @param counter         if this property represents a counter
      * @param counterIncrease if this property represents a value for a counter arithmetic operation
      */
-    private void addProperty(Column colAnnotation, String propertyName, Class<?> type, boolean indexed, boolean lazy, boolean counter, boolean counterIncrease) throws ClassNotFoundException, IntrospectionException {
+    protected void addProperty(Column colAnnotation, String propertyName, Class<?> type, boolean indexed, boolean lazy, boolean counter, boolean counterIncrease) throws ClassNotFoundException, IntrospectionException {
         propertiesTypesMap.put(propertyName, type);
         mutationProperties.add(propertyName);
         if (indexed) {
