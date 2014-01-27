@@ -383,7 +383,7 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
      * @param <V>  The type of value
      * @return a CqlQuery
      */
-    private <T, V> CqlQuery<String, String, V> getCQLQuery(Class<T> type, String query) {
+    protected <T, V> CqlQuery<String, String, V> getCQLQuery(Class<T> type, String query) {
         ClassMetadata classMetadata = getClassMetadata(type);
         Keyspace keyspace;
         if (classMetadata == null) { //this is not a managed class such as requesting a long for now as workaround the first keyspace will be selected //todo change in the future to be able to pass akeyspace
