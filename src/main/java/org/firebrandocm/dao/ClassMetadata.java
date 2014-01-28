@@ -456,7 +456,7 @@ public class ClassMetadata<T> {
      * @param element      the type
      * @param propertyName the property name
      */
-    private void processSimpleColumn(Field element, String propertyName) throws ClassNotFoundException, IntrospectionException {
+    protected void processSimpleColumn(Field element, String propertyName) throws ClassNotFoundException, IntrospectionException {
         propertiesTypesMap.put(propertyName, element.getType());
         mutationProperties.add(propertyName);
         propertyContainerMap.put(propertyName, element.getDeclaringClass());

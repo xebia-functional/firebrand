@@ -759,6 +759,20 @@ public abstract class AbstractPersistenceFactory implements PersistenceFactory {
         return String.format(MAPPED_VALUE_FORMAT, ObjectUtils.getRealClass(value.getClass()).getName(), getKey(value));
     }
 
+
+    /**
+     * Initializes metadata
+     * @throws Exception
+     */
+    protected void initializeMetadata() throws Exception {
+        for (Class<?> entityClass : entities) {
+            ClassMetadata metadata = new ClassMetadata(entityClass, this);
+            classMetadataMap.put(entityClass, metadata);
+        }
+
+    }
+
+
     /**
      * Initializes the factory.
      * Should be invoked by subclasses
@@ -770,11 +784,8 @@ public abstract class AbstractPersistenceFactory implements PersistenceFactory {
         CQLMappedEntityValueConverter mappedEntityConverter = new CQLMappedEntityValueConverter(this);
         QueryBuilder.addConverter(0, mappedEntityConverter);
         QueryBuilder.addConverter(1, new CQLMappedCollectionValueConverter(mappedEntityConverter));
-        for (Class<?> entityClass : entities) {
-            ClassMetadata metadata = new ClassMetadata(entityClass, this);
-            classMetadataMap.put(entityClass, metadata);
-        }
-        if (startEmbeddedServer) {
+        initializeMetadata();
+	if (startEmbeddedServer) {
             log.warn("starting dev embedded server");
             if (cassandraServer == null) {
                 cassandraServer = new EmbeddedCassandraServer(embeddedServerBaseDir);
