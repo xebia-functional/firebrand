@@ -765,7 +765,6 @@ public abstract class AbstractPersistenceFactory implements PersistenceFactory {
      * @throws Exception
      */
     protected void initializeMetadata() throws Exception {
-
         for (Class<?> entityClass : entities) {
             ClassMetadata metadata = new ClassMetadata(entityClass, this);
             classMetadataMap.put(entityClass, metadata);
