@@ -584,7 +584,7 @@ public abstract class AbstractPersistenceFactory implements PersistenceFactory {
     }
 
     /**
-     * Gets the class metadata map
+     * Gets the class metadata from map
      *
      * @param entityClass
      * @param <T>
@@ -593,6 +593,16 @@ public abstract class AbstractPersistenceFactory implements PersistenceFactory {
     @SuppressWarnings("unchecked")
     public <T> ClassMetadata<T> getClassMetadata(Class<T> entityClass) {
         return (ClassMetadata<T>) classMetadataMap.get(ObjectUtils.getRealClass(entityClass));
+    }
+
+
+    /**
+     *
+     * Gets the class metada map
+     *
+     */
+    public Map<Class<?>, ClassMetadata<?>> getClassMetadataMap() {
+        return classMetadataMap;
     }
 
     /**
