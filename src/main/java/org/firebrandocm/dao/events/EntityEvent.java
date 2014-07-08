@@ -52,7 +52,7 @@ public class EntityEvent {
 	public EntityEvent(PersistenceFactory persistenceFactory, Event.Entity event, Object... entities) {
 		this.persistenceFactory = persistenceFactory;
 		this.event = event;
-		this.entities = this.entities;
+		this.entities = entities;
 	}
 
     /* Getters & Setters */
