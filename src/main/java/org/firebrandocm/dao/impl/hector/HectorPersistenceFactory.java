@@ -950,6 +950,11 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
             return this;
         }
 
+        public Builder cassandraHostConfigurator(CassandraHostConfigurator cassandraHostConfigurator) {
+            delegate.setCassandraHostConfigurator(cassandraHostConfigurator);
+            return this;
+        }
+
         public HectorPersistenceFactory build() throws Exception {
             delegate.init();
             return delegate;
