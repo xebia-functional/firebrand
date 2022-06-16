@@ -64,8 +64,6 @@ public class Assignment {
 
 	@Override
 	public String toString() {
-		return quoted ?
-				String.format(String.format("'%s' = '%s'", column, value))
-				:String.format(String.format("%s = %s", column, value));
+		return quoted ?	String.format("'%s' = '%s'", column, value)	: String.format("%s = %s", column, value);
 	}
 }

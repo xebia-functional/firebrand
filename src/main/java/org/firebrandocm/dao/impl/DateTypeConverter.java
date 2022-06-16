@@ -40,8 +40,8 @@ public class DateTypeConverter implements TypeConverter<Date> {
 		return longTypeConverter.toValue(value.getTime());
 	}
 
-	public Date fromValue(ByteBuffer value) throws Exception {
-		Long time = longTypeConverter.fromValue(value);
+	public Date fromValue(ByteBuffer value, Class<Date> targetType) throws Exception {
+		Long time = longTypeConverter.fromValue(value, Long.class);
 		return time != null ? new Date(time) : null;
 	}
 }

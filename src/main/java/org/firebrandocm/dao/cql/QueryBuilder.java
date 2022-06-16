@@ -21,14 +21,15 @@ package org.firebrandocm.dao.cql;
 import org.apache.cassandra.locator.AbstractReplicationStrategy;
 import org.apache.cassandra.thrift.IndexOperator;
 import org.firebrandocm.dao.cql.clauses.*;
-import org.firebrandocm.dao.cql.clauses.Set;
 import org.firebrandocm.dao.cql.converters.CQLDateValueConverter;
 import org.firebrandocm.dao.cql.converters.CQLGenericObjectValueConverter;
 import org.firebrandocm.dao.cql.converters.CQLStringValueConverter;
 import org.firebrandocm.dao.cql.converters.CQLValueConverter;
 import org.firebrandocm.dao.cql.statement.*;
+import org.firebrandocm.dao.utils.ClassUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Constructs CQL queries
@@ -214,7 +215,7 @@ public class QueryBuilder {
 	}
 
 	public static ColumnFamily columnFamily(Class<?> entityClass) {
-		return columnFamily(entityClass.getSimpleName());
+		return columnFamily(ClassUtil.getColumnFamilyName(entityClass));
 	}
 
 	public static OnColumnFamily onColumnFamily(String columnFamily) {
@@ -222,7 +223,7 @@ public class QueryBuilder {
 	}
 
 	public static OnColumnFamily onColumnFamily(Class<?> entityClass) {
-		return onColumnFamily(entityClass.getSimpleName());
+		return onColumnFamily(ClassUtil.getColumnFamilyName(entityClass));
 	}
 
 	public static First first(int first) {
@@ -246,7 +247,7 @@ public class QueryBuilder {
 	}
 
 	public static From from(Class<?> entityClass) {
-		return new From(entityClass.getSimpleName());
+        return new From(ClassUtil.getColumnFamilyName(entityClass));
 	}
 
 	public static From from(String columnFamily) {

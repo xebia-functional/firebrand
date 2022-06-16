@@ -36,7 +36,7 @@ public class IntegerTypeConverter implements TypeConverter<Integer> {
 		return IntegerSerializer.get().toByteBuffer(value);
 	}
 
-	public Integer fromValue(ByteBuffer value) {
+	public Integer fromValue(ByteBuffer value, Class<Integer> targetType) {
 		return IntegerSerializer.get().fromByteBuffer(value);
 	}
 }

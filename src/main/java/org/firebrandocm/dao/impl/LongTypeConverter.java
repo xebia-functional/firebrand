@@ -37,7 +37,7 @@ public class LongTypeConverter implements TypeConverter<Long> {
 		return LongSerializer.get().toByteBuffer(value);
 	}
 
-	public Long fromValue(ByteBuffer value) {
+	public Long fromValue(ByteBuffer value, Class<Long> targetType) {
 		return LongSerializer.get().fromByteBuffer(value);
 	}
 }

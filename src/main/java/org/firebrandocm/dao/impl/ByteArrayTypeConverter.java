@@ -15,7 +15,7 @@ public class ByteArrayTypeConverter implements TypeConverter<byte[]> {
     }
 
     @Override
-    public byte[] fromValue(ByteBuffer value) throws Exception {
+    public byte[] fromValue(ByteBuffer value, Class<byte[]> targetType) throws Exception {
         return BytesArraySerializer.get().fromByteBuffer(value);
     }
 }

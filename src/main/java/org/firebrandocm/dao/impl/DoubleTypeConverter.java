@@ -36,7 +36,7 @@ public class DoubleTypeConverter implements TypeConverter<Double> {
 		return DoubleSerializer.get().toByteBuffer(value);
 	}
 
-	public Double fromValue(ByteBuffer value) {
+	public Double fromValue(ByteBuffer value, Class<Double> targetType) {
 		return DoubleSerializer.get().fromByteBuffer(value);
 	}
 }

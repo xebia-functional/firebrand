@@ -369,7 +369,7 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
      * @param <V> the value type
      * @return the CqlQuery
      */
-    private <T, V> CqlExecuteQuery<V> getCQLExecuteQuery(String query) {
+    protected <T, V> CqlExecuteQuery<V> getCQLExecuteQuery(String query) {
         CqlExecuteQuery<V> cqlQuery = new CqlExecuteQuery<V>(getDefaultKeyspace());
         cqlQuery.setQuery(query);
         return cqlQuery;
@@ -383,7 +383,7 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
      * @param <V>  The type of value
      * @return a CqlQuery
      */
-    private <T, V> CqlQuery<String, String, V> getCQLQuery(Class<T> type, String query) {
+    protected <T, V> CqlQuery<String, String, V> getCQLQuery(Class<T> type, String query) {
         ClassMetadata classMetadata = getClassMetadata(type);
         Keyspace keyspace;
         if (classMetadata == null) { //this is not a managed class such as requesting a long for now as workaround the first keyspace will be selected //todo change in the future to be able to pass akeyspace
@@ -403,7 +403,7 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
      * @param query a cql query
      * @return the resulting columns and their values
      */
-    private Map<String, ByteBuffer> getColumns(String query) {
+    protected Map<String, ByteBuffer> getColumns(String query) {
         Map<String, ByteBuffer> resultMap = new LinkedHashMap<String, ByteBuffer>();
         CqlQuery<String, String, Object> cqlQuery = new CqlQuery<String, String, Object>(getDefaultKeyspace(), StringSerializer.get(), StringSerializer.get(), new TypeConverterSerializer<Object>());
         cqlQuery.setQuery(query);
@@ -450,7 +450,7 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
     /**
      * Private helper to initialize the schema
      */
-    private void initializeSchema() throws Exception {
+    protected void initializeSchema() throws Exception {
         if (keyspaceDefinitions.size() == 0)
             throw new IllegalStateException("no keyspace definitions founds, maybe add some entities to the factory");
         for (KeyspaceDefinition keyspaceDefinition : ThriftKsDef.fromThriftList(new ArrayList<KsDef>(keyspaceDefinitions.values()))) {
@@ -483,7 +483,7 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
      * @param keyspaceDefinition     the keyspace definition
      * @return true if the column family is already present in the keyspace
      */
-    private boolean keyspaceContainsColumnFamily(ColumnFamilyDefinition columnFamilyDefinition, KeyspaceDefinition keyspaceDefinition) {
+    protected boolean keyspaceContainsColumnFamily(ColumnFamilyDefinition columnFamilyDefinition, KeyspaceDefinition keyspaceDefinition) {
         boolean contains = false;
         for (ColumnFamilyDefinition columnFamilyDefinitionEntry : keyspaceDefinition.getCfDefs()) {
             if (columnFamilyDefinitionEntry.getName().equals(columnFamilyDefinition.getName())) {
@@ -501,7 +501,7 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
      * @param keyspaceDefinition the keyspace
      * @return the column family if found, null otherwise
      */
-    private ColumnFamilyDefinition getColumnFamilyFromKeyspace(String name, KeyspaceDefinition keyspaceDefinition) {
+    protected ColumnFamilyDefinition getColumnFamilyFromKeyspace(String name, KeyspaceDefinition keyspaceDefinition) {
         ColumnFamilyDefinition definition = null;
         for (ColumnFamilyDefinition columnFamilyDefinitionEntry : keyspaceDefinition.getCfDefs()) {
             if (columnFamilyDefinitionEntry.getName().equals(name)) {
@@ -706,7 +706,7 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
      * @param value    the value
      * @param entity   the entity the property belongs to
      */
-    private void updateSimpleColumn(Mutator<String> mutator, String key, ClassMetadata metadata, String property, Object value, Object entity) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, IOException {
+    protected void updateSimpleColumn(Mutator<String> mutator, String key, ClassMetadata metadata, String property, Object value, Object entity) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException, IOException {
         String colFamily = metadata.getColumnFamily();
         if (!metadata.isAssociationContainer(property)) { //association container properties are ignored since their embedded properties are flatten into the column family
             if (value == null) {
@@ -795,7 +795,7 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
      * It delegates its operations to AbstractPersistenceFactory#convertRead and AbstractPersistenceFactory#convertWrite
      * @param <Type>
      */
-    private final class TypeConverterSerializer<Type> extends AbstractSerializer<Type> {
+    public final class TypeConverterSerializer<Type> extends AbstractSerializer<Type> {
         /**
          * The target class
          */
@@ -804,14 +804,14 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
         /**
          * Default constructor
          */
-        private TypeConverterSerializer() {
+        public TypeConverterSerializer() {
         }
 
         /**
          * Constructor based on a target object
          * @param targetObject the target object
          */
-        private TypeConverterSerializer(Type targetObject) {
+        public TypeConverterSerializer(Type targetObject) {
             this.target = targetObject != null ? targetObject.getClass() : null;
         }
 
@@ -819,7 +819,7 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
          * Constructor based on target object class
          * @param target the target object class
          */
-        private TypeConverterSerializer(Class<Type> target) {
+        public TypeConverterSerializer(Class<Type> target) {
             this.target = target;
         }
 
@@ -947,6 +947,11 @@ public class HectorPersistenceFactory extends AbstractPersistenceFactory {
 
         public Builder entities(List<Class<?>> entities) {
             delegate.setEntities(entities);
+            return this;
+        }
+
+        public Builder cassandraHostConfigurator(CassandraHostConfigurator cassandraHostConfigurator) {
+            delegate.setCassandraHostConfigurator(cassandraHostConfigurator);
             return this;
         }
 

@@ -73,6 +73,9 @@ public class FirstEntity {
 	@Mapped
 	private SecondEntity mappedEntity;
 
+    @Column
+    private TestEnum testEnum;
+
 	@Mapped(lazy = true)
 	private SecondEntity secondLazyMappedEntity;
 
@@ -245,6 +248,14 @@ public class FirstEntity {
 
     public void setSomeMoreBytes(Byte[] someMoreBytes) {
         this.someMoreBytes = someMoreBytes;
+    }
+
+    public TestEnum getTestEnum() {
+        return testEnum;
+    }
+
+    public void setTestEnum(TestEnum testEnum) {
+        this.testEnum = testEnum;
     }
 
     @OnEvent(Event.Entity.PRE_PERSIST)

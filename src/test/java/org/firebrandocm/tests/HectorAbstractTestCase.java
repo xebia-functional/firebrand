@@ -78,7 +78,7 @@ public abstract class HectorAbstractTestCase {
       factory.setEntitiesPkg( clazzezPkg );
       factory.setDropOnDestroy(DROP_ON_DESTROY);
       factory.init();
-      persistentClasses = ClassUtil.get( clazzezPkg, ColumnFamily.class );
+      persistentClasses = ClassUtil.get(clazzezPkg, ColumnFamily.class);
     }
 
     public static void initWithClasses(Class<?>... clazzez) throws Exception {
@@ -104,12 +104,14 @@ public abstract class HectorAbstractTestCase {
 			throw new IllegalStateException("set persistentClassNames in @BeforeClass");
 		}
 		for (Class<?> persistentClass : persistentClasses) {
+            String columnFamilyName = ClassUtil.getColumnFamilyName(persistentClass);
+
 			factory.executeQuery(Integer.class, Query.get(truncate(
-					columnFamily(persistentClass.getSimpleName())
+					columnFamily(columnFamilyName)
 			)));
 			List<?> results = factory.getResultList(persistentClass, Query.get(select(
 					allColumns(),
-					from(persistentClass.getSimpleName())
+					from(columnFamilyName)
 			)));
 			assertEquals(0, results.size());
 		}

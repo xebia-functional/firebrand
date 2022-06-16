@@ -25,16 +25,20 @@ public interface TypeConverter<T> {
 
 	/**
 	 *
-	 * @param value the value as a byte buffer
-	 * @return the value converted as an object
+	 *
+     * @param value the value as a byte buffer
+     * @param targetType
+     * @return the value converted as an object
 	 */
-	T fromValue(ByteBuffer value) throws Exception;
+	T fromValue(ByteBuffer value, Class<T> targetType) throws Exception;
 
 	/**
 	 *
 	 *
-	 * @param value the value as an object, invoked for mutate operations
-	 * @return a byte buffer for the current object value
+	 *
+     *
+     * @param value the value as an object, invoked for mutate operations
+     * @return a byte buffer for the current object value
 	 */
 	ByteBuffer toValue(T value) throws Exception;
 }

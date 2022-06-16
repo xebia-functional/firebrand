@@ -1,4 +1,8 @@
-[![Build Status](https://travis-ci.org/47deg/firebrand.png?branch=master)](undefined)
+[![Build Status][3]][4]
+
+THIS PROJECT IS DISCONTINUED — USE AT YOUR OWN RISK
+
+It has been a fun and great project but it's time for us to move on. Check out our recent work that we are doing with Scala and follow us on Github and Twitter for new and exciting open source projects. Thanks for your continuing support. If you wish to take on maintenance of this library please contact us through the issue tracker.
 
 # Firebrand OCM 
 
@@ -39,7 +43,7 @@ repository where the Firebrand snapshot artifacts are being deployed. Firebrand 
 ```
 ## JAR and others
 
-You can get the releases, snapshots and other forms in which Firebrand is distributed from the [Downloads](https://github.com/47deg/firebrand/downloads) page.
+Latest snapshots in jar, javadoc and sources forms are published to the sonatype snapshot repository [here](https://oss.sonatype.org/content/repositories/snapshots/org/firebrandocm/firebrand/1.0-SNAPSHOT/)
 
 # Usage
 
@@ -873,3 +877,35 @@ All CQL value converters are implementers of [org.firebrandocm.dao.cql.converter
 
 You may contribute your own converters or override the default configured ones with
 org.cassandraobjects.dao.cql.QueryBuilder#addConverter
+
+# Continuous Integration
+
+CI and Artifact Repository hosted in ClinkerHQ.com
+
+[![ClinkerHQ][1]][2]
+
+# License
+
+Copyright (C) 2014 47 Degrees, LLC
+http://47deg.com
+hello@47deg.com
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+
+[1]: http://dl.clinkerhq.com/assets/badge/clinker-badge_125x125.png
+[2]: http://clinkerhq.com
+[3]: https://clinker.47deg.com/desktop/plugin/public/status/Firebrand
+[4]: https://clinker.47deg.com/jenkins/job/Firebrand/
+
+

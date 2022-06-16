@@ -24,6 +24,7 @@ import org.firebrandocm.dao.cql.clauses.ColumnDataType;
 import org.firebrandocm.dao.cql.clauses.ConsistencyType;
 import org.firebrandocm.dao.cql.clauses.StorageParameter;
 import org.firebrandocm.dao.cql.statement.Statement;
+import org.firebrandocm.dao.utils.ClassUtil;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
@@ -230,6 +231,18 @@ public class QueryBuilderParserTest {
 		);
 	}
 
+    @Test
+    public void testDeleteEmpty() throws Exception {
+        test("DELETE FROM ColumnFamily WHERE KEY in ('0', '1', '2', '3');",
+                delete(
+                        from("ColumnFamily"),
+                        where(
+                                keyIn(0, 1, 2, 3)
+                        )
+                )
+        );
+    }
+
 	@Test
 	public void testTruncate() throws Exception {
 		test(
@@ -426,6 +439,12 @@ public class QueryBuilderParserTest {
 		test(String.format("FROM %s", FirstEntity.class.getSimpleName()), from(FirstEntity.class));
 		test("FROM FirstEntity", from("FirstEntity"));
 	}
+
+    @Test
+    public void testFromWithCustomColumnFamilyName() throws Exception {
+        test(String.format("FROM %s", ClassUtil.getColumnFamilyName(SecondEntity.class)), from(SecondEntity.class));
+        test("FROM class_secondentity", from("class_secondentity"));
+    }
 
 	@Test
 	public void testConsistency() throws Exception {

@@ -407,7 +407,7 @@ public abstract class AbstractPersistenceFactory implements PersistenceFactory {
      * @param entitiesPkg
      */
     public void setEntitiesPkg(String entitiesPkg) throws IOException, ClassNotFoundException {
-      setEntities(ClassUtil.get(entitiesPkg, ColumnFamily.class));
+        setEntities(ClassUtil.get(entitiesPkg, ColumnFamily.class));
     }
 
     /**
@@ -532,21 +532,28 @@ public abstract class AbstractPersistenceFactory implements PersistenceFactory {
      * @param entities the object entities
      */
     protected void createKeysIfNeeded(Object... entities) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
+        createKeysIfNeeded(new HashSet<Object>(), entities);
+    }
+
+    private void createKeysIfNeeded(Set<Object> processed, Object... entities) throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         for (Object entity : entities) {
-            String key = getKey(entity);
-            if (key == null) {
-                key = ObjectUtils.newTimeUuid().toString();
-            }
-            ClassMetadata<?> metadata = getClassMetadata(entity.getClass());
-            PropertyUtils.setProperty(entity, metadata.getKeyProperty(), key);
-            for (String mappedProperty : metadata.getMappedProperties()) {
-                Object mappedEntity = PropertyUtils.getProperty(entity, mappedProperty);
-                if (mappedEntity != null) {
-                    if (Collection.class.isAssignableFrom(mappedEntity.getClass())) {
-                        Collection<?> nestedEntities = (Collection) mappedEntity;
-                        createKeysIfNeeded(nestedEntities.toArray());
-                    } else {
-                        createKeysIfNeeded(mappedEntity);
+            if (!processed.contains(entity)) {
+                processed.add(entity);
+                String key = getKey(entity);
+                if (key == null) {
+                    key = ObjectUtils.newTimeUuid().toString();
+                }
+                ClassMetadata<?> metadata = getClassMetadata(entity.getClass());
+                PropertyUtils.setProperty(entity, metadata.getKeyProperty(), key);
+                for (String mappedProperty : metadata.getMappedProperties()) {
+                    Object mappedEntity = PropertyUtils.getProperty(entity, mappedProperty);
+                    if (mappedEntity != null) {
+                        if (Collection.class.isAssignableFrom(mappedEntity.getClass())) {
+                            Collection<?> nestedEntities = (Collection) mappedEntity;
+                            createKeysIfNeeded(processed, nestedEntities.toArray());
+                        } else {
+                            createKeysIfNeeded(processed, mappedEntity);
+                        }
                     }
                 }
             }
@@ -577,7 +584,7 @@ public abstract class AbstractPersistenceFactory implements PersistenceFactory {
     }
 
     /**
-     * Gets the class metadata map
+     * Gets the class metadata from map
      *
      * @param entityClass
      * @param <T>
@@ -586,6 +593,16 @@ public abstract class AbstractPersistenceFactory implements PersistenceFactory {
     @SuppressWarnings("unchecked")
     public <T> ClassMetadata<T> getClassMetadata(Class<T> entityClass) {
         return (ClassMetadata<T>) classMetadataMap.get(ObjectUtils.getRealClass(entityClass));
+    }
+
+
+    /**
+     *
+     * Gets the class metada map
+     *
+     */
+    public Map<Class<?>, ClassMetadata<?>> getClassMetadataMap() {
+        return classMetadataMap;
     }
 
     /**
@@ -752,6 +769,20 @@ public abstract class AbstractPersistenceFactory implements PersistenceFactory {
         return String.format(MAPPED_VALUE_FORMAT, ObjectUtils.getRealClass(value.getClass()).getName(), getKey(value));
     }
 
+
+    /**
+     * Initializes metadata
+     * @throws Exception
+     */
+    protected void initializeMetadata() throws Exception {
+        for (Class<?> entityClass : entities) {
+            ClassMetadata metadata = new ClassMetadata(entityClass, this);
+            classMetadataMap.put(entityClass, metadata);
+        }
+
+    }
+
+
     /**
      * Initializes the factory.
      * Should be invoked by subclasses
@@ -763,11 +794,8 @@ public abstract class AbstractPersistenceFactory implements PersistenceFactory {
         CQLMappedEntityValueConverter mappedEntityConverter = new CQLMappedEntityValueConverter(this);
         QueryBuilder.addConverter(0, mappedEntityConverter);
         QueryBuilder.addConverter(1, new CQLMappedCollectionValueConverter(mappedEntityConverter));
-        for (Class<?> entityClass : entities) {
-            ClassMetadata metadata = new ClassMetadata(entityClass, this);
-            classMetadataMap.put(entityClass, metadata);
-        }
-        if (startEmbeddedServer) {
+        initializeMetadata();
+	if (startEmbeddedServer) {
             log.warn("starting dev embedded server");
             if (cassandraServer == null) {
                 cassandraServer = new EmbeddedCassandraServer(embeddedServerBaseDir);
@@ -814,6 +842,7 @@ public abstract class AbstractPersistenceFactory implements PersistenceFactory {
             typeConverters.put(Boolean.class, new BooleanTypeConverter());
             typeConverters.put(Long.class, new LongTypeConverter());
             typeConverters.put(Double.class, new DoubleTypeConverter());
+            typeConverters.put(Enum.class, new EnumTypeConverter());
             typeConverters.put(Integer.class, new IntegerTypeConverter());
             typeConverters.put(Date.class, new DateTypeConverter());
             typeConverters.put(boolean.class, new BooleanTypeConverter());
@@ -984,6 +1013,6 @@ public abstract class AbstractPersistenceFactory implements PersistenceFactory {
     protected Object convertRead(Class<?> type, ByteBuffer value) throws Exception {
         TypeConverter<Object> converter = (TypeConverter<Object>) getTypeConverter(type);
         deffenseConverter(converter, type);
-        return converter.fromValue(value);
+        return converter.fromValue(value, (Class<Object>) type);
     }
 }
